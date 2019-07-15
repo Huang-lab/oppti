@@ -1,7 +1,6 @@
 ---
 title: "Outlier Protein and Phosphosite Target Identifier"
 output: pdf_document
-# bibliography: bibliography.bib
 vignette: |
   %\VignetteIndexEntry{X. Outlier Protein and Phosphosite Target Identifier} %\VignetteEngine{knitr::rmarkdown}
 ---
