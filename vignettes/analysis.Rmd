@@ -1,21 +1,27 @@
 ---
 title: "Outlier Protein and Phosphosite Target Identifier"
-output: pdf_document
+output: # pdf_document
+    md_document:
+        variant: markdown_github
 vignette: |
-  %\VignetteIndexEntry{X. Outlier Protein and Phosphosite Target Identifier} %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteIndexEntry{
+    X. Outlier Protein and Phosphosite Target Identifier}
+    %\VignetteEngine{knitr::rmarkdown}
 ---
-  
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(dpi = 300)
 knitr::opts_chunk$set(cache=FALSE)
 ```
-  
+
 ```{r, echo = FALSE, hide=TRUE, message=FALSE, warning=FALSE}
 devtools::load_all(".")
 ```
 
 # Analyze proteomics data of a single cohort
-You can easily analyze outlying (dysregulated) markers for each sample in a cohort. Lets generate a toy proteomics data for a cohort of 30 tumor samples, each quantifying 100 proteins.
+You can easily analyze outlying (dysregulated) markers for each sample in a 
+cohort. Lets generate a toy proteomics data for a cohort of 30 tumor samples,
+each quantifying 100 proteins.
 ```{r, eval = TRUE}
 set.seed(1)
 cohort1.proteome = as.data.frame(matrix(abs(rnorm(100*30)), 100, 30)) 
@@ -28,44 +34,60 @@ library(oppti)
 result = oppti(cohort1.proteome)
 ```
 
-The outlier scores of each marker in each sample are then returned in the first element of the result:
+The outlier scores of each marker in each sample are then returned in the first
+element of the result:
 ```{r, eval = TRUE} 
 cohort1.outlier.scores = result[[1]] 
 ```
 ```{r, eval = TRUE, echo = FALSE, size = 8}
 knitr::kable(cohort1.outlier.scores[1:10,1:4], digits = 2, 
-             caption = "Example matrix of outlier scores, displayed for the first 10 proteins (rows) and the first 4 samples (columns)",
-             row.names = TRUE)
+    caption = "Example matrix of outlier scores, displayed for the
+    first 10 proteins (rows) and the first 4 samples (columns)",
+    row.names = TRUE)
 ```
 
-In this toy example, marker5 has a (somewhat) elevated outlier score in sample3, suggesting a protruding expression in the tumor tissue of sample3 relative to a normal state (i.e., the consensus co-expression network inferred for marker5). Note that a negative sign in the outlier score indicates a negative dysregulation event, i.e., relatively "lower" protein expression is expected in the observed tumor state compared to the normal state. The landscape of these aberrant expressions analyzed for a cohort of individuals may serve for the discovery of personalized actionable targets.
+In this toy example, marker5 has a (somewhat) elevated outlier score in
+sample3, suggesting a protruding expression in the tumor tissue of sample3
+relative to a normal state (i.e., the consensus co-expression network inferred
+for marker5). Note that a negative sign in the outlier score indicates a
+negative dysregulation event, i.e., relatively "lower" protein expression is
+expected in the observed tumor state compared to the normal state. The
+landscape of these aberrant expressions analyzed for a cohort of individuals
+may serve for the discovery of personalized actionable targets.
 
 # Analyze proteomics data of multiple cohorts
-For pan-cancer analyses, the normalized proteomics data from different cohorts can be supplied to `oppti` in a list object. Lets generate another toy proteomics data for a separate cohort of 20 tumor samples, each quantifying 80 proteins (say, 50 of which are overlapping with those quantified in the first cohort).
+For pan-cancer analyses, the normalized proteomics data from different cohorts
+can be supplied to `oppti` in a list object. Lets generate another toy
+proteomics data for a separate cohort of 20 tumor samples, each quantifying 80
+proteins (say, 50 of which are overlapping with those quantified in the first
+cohort).
 ```{r, eval = TRUE}
 cohort2.proteome = as.data.frame(matrix(abs(rnorm(80*20)), 80, 20)) 
 rownames(cohort2.proteome) = paste('marker', 51:130, sep = '')
 colnames(cohort2.proteome) = paste('cohort2.sample', 31:50, sep = '')
 ```
 
-To run `oppti` for both cohorts, the data are simply fed in a single list object:
+To run `oppti` for both cohorts, the data are simply fed in a single list
+object:
 ```{r, eval = TRUE}
 result = oppti(list(cohort1.proteome,cohort2.proteome))
 ```
 
-Again, the outlier scores of each marker in each sample are returned in the first element of the result. 
+Again, the outlier scores of each marker in each sample are returned in the
+first element of the result. 
 ```{r, eval = TRUE} 
 outlier.scores = result[[1]]
 ```
 
-However, this object is a list of 2 elements per se, corresponding to two cohorts. To obtain the outlier scores of the first cohort:
+However, this object is a list of 2 elements per se, corresponding to two
+cohorts. To obtain the outlier scores of the first cohort:
 ```{r, eval = TRUE} 
 cohort1.outlier.scores = outlier.scores[[1]]
 ```
 ```{r, eval = TRUE, echo = FALSE, size = 8}
 knitr::kable(cohort1.outlier.scores[1:10,1:4], digits = 2, 
-             caption = "Example outlier scores in cohort1",
-             row.names = TRUE)
+    caption = "Example outlier scores in cohort1",
+    row.names = TRUE)
 ```
 
 Similarly, for the second cohort the outlier scores are obtained by:
@@ -74,7 +96,6 @@ cohort2.outlier.scores = outlier.scores[[2]]
 ```
 ```{r, eval = TRUE, echo = FALSE, size = 8}
 knitr::kable(cohort2.outlier.scores[1:10,1:4], digits = 2, 
-             caption = "Example outlier scores in cohort2",
-             row.names = TRUE)
+    caption = "Example outlier scores in cohort2",
+    row.names = TRUE)
 ```
-
