@@ -1,4 +1,14 @@
-export('artImpute', 'clusterData', 'dropMarkers', 'dysReg', 'markOut', 'outScores', 'plotDen', 'rankPerOut', 'statTest', 'oppti')
+export('artImpute', 
+    'clusterData', 
+    'dropMarkers', 
+    'dysReg', 
+    'markOut', 
+    'outScores', 
+    'plotDen', 
+    'rankPerOut', 
+    'statTest', 
+    'oppti'
+    )
 importFrom('limma', 'plotDensities')
 importFrom('reshape', 'melt')
 importFrom('cafr', 'attractorScanning')
