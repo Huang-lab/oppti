@@ -2,8 +2,8 @@
 #
 #   cbindNA
 #
-#   bind arbitrary-length columns given in a list into a dataframe with
-#   NA-filled ends
+#   Binds arbitrary-length columns given in a list into a dataframe with
+#     NA-filled ends.
 #
 cbindNA = function(X = list(seq_len(2),seq_len(3),seq_len(4))){
     n = 0
@@ -21,10 +21,11 @@ cbindNA = function(X = list(seq_len(2),seq_len(3),seq_len(4))){
 #   outScores
 #
 #   Calculates potential outlier scores (p-statistic) as a function of distance
-#       from 1st/3rd (box) quartiles.
+#     from 1st/3rd (box) quartiles.
 #   If the value lies within the box the score is 1, if it lies further away
-#       from the box the score gets closer to 0.
-#   an object of the same class as dat containing the potential outlier scores.
+#     from the box the score gets closer to 0.
+#   Returns, an object of the same class as dat containing the potential
+#     outlier scores.
 #
 outScores = function(dat) {
     n = ncol(dat)
@@ -47,9 +48,10 @@ outScores = function(dat) {
 #
 #   gqplot
 #
-#   draws a scatter plot based on the grammer of graphics (ggplot2)
-#   draw a regression line and displays a confidence interval around it
-#   returns each data point's distance to the regresion line
+#   Draws a scatter plot based on the grammer of graphics (ggplot2), then
+#     draws a regression line and displays a confidence interval around it.
+#
+#   Returns each data point's distance to the regresion line, and the plot.
 #
 gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
     d.thr = 0, na.action = 'omit', samp.names = NULL, marker.name = NULL,
@@ -150,4 +152,33 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
                 ggplot2::aes(x=variable2, y=variable1), colour = 'red')
     }
     return(list(outlier.score, gg))
+}
+# _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
+#
+#   madNorm
+#
+#   Normalizes the columns of a data frame to have the unit Median Absolute
+#     Deviation (MAD), i.e., median(abs(df$i-median(df$i))) = 1, for every 'i'.
+#     Optionally, center the medians to the median of all column medians
+#     (centering = T).
+#
+#   Special attention must be paid to columns with zero-MAD, i.e., no
+#     variation, static values. By default, they are omitted (unprocessed).
+#     Optionally, they can be centered to the median of all column medians
+#     (centering.zero.mad = T), however, they can not be scaled to have a
+#     unit-MAD due to static values.
+#
+madNorm = function(df, centering = FALSE, centering.zero.mad = FALSE){
+    mads = apply(df,2,function(x)
+        {median(abs(x-median(x,na.rm=TRUE)),na.rm=TRUE)})
+    omit = mads==0
+    mads[omit] = 1 # omit scaling 0-MAD columns
+    df = df / matrix(rep(mads,each=dim(df)[1]),nrow=dim(df)[1],byrow=FALSE)
+    if (centering) {
+        cent = apply(df,2,'median',na.rm=TRUE)-
+            median(apply(df,2,'median',na.rm=TRUE),na.rm=TRUE)
+        if (!centering.zero.mad) {cent[omit] = 0} #omit centering 0-MAD columns
+        df = df - matrix(rep(cent,each=dim(df)[1]),nrow=dim(df)[1],byrow=FALSE)
+    }
+    return(df)
 }

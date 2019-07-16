@@ -376,17 +376,23 @@ clusterData = function(data, annotation_col = NULL, annotation_row = NULL,
 }
 #' @title Analyze protein / phosphosite expressions
 #' @description Find outlying markers and events across cancer types.
-#' @param file.path, character string, path to a data list where each element
-#'  contains proteomics data for a different cohort (markers in the rows,
-#'   samples in the columns)
-#' @param panel, character string in c('global', 'pancan', 'drugge', 'immune',
-#'  'kinase'), a panel of markers to analyze accross cohorts
+#' @param data, a list object where each element contains a proteomics data for
+#'  a different cohort (markers in the rows, samples in the columns) or
+#'  character string defining the path to such data (in .RDS format)
+#' @param mad.norm, logical, to normalize the proteomes to have a unit Median
+#'  Absolute Deviation
 #' @param cohort.names, character array
+#' @param panel, a character string describing marker panel, e.g., 'kinases'
+#'  use 'global' to analyze all markers quantified accross cohorts (default)
+#'  use 'pancan' to analyze the markers commonly quantified accross the cohorts
+#' @param panel.markers, a character array containing the set of marker names
+#'  that user wants to analyze, e.g., panel.markers = c("AAK1", "AATK", "ABL1",
+#'  "ABL2", ...)
 #' @param tol.nas, a constant in [0,100], tolerance for the percentage of NAs
 #'  in a marker, e.g., tol.nas = 20 will filter out markers contatining 20% or
 #'   more NAs
 #' @param ku, an integer in [1,num.markers], upper bound on the number of
-#'  nearest neighbors
+#'  nearest neighbors of a marker
 #' @param miss.pstat, a constant in [0,1], statistic to estimate potential
 #'  outliers, 0.4 ~= q75+1.5*IQR
 #' @param demo.panels, logical, to draw demographics of the panel in each
@@ -405,11 +411,10 @@ clusterData = function(data, annotation_col = NULL, annotation_row = NULL,
 #'  significance of each marker's outlier samples;
 #'  pan.marker.out.exp.per, a data list contatining, for each cohort, the
 #'  percentage of outlier samples for every marker
-oppti = function(data, panel = 'global', cohort.names = NULL, tol.nas = 20,
-    ku = 6, miss.pstat = .4, demo.panels = FALSE,
-    save.data = FALSE, draw.sc.plots = FALSE,
-    draw.vi.plots = FALSE, draw.ou.plots = FALSE,
-    verbose = FALSE) {
+oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
+    panel.markers = NULL, tol.nas = 20, ku = 6, miss.pstat = .4,
+    demo.panels = FALSE, save.data = FALSE, draw.sc.plots = FALSE,
+    draw.vi.plots = FALSE, draw.ou.plots = FALSE, verbose = FALSE) {
     # Load data
     if (is.character(data)){tryCatch({data = readRDS(data)},
         warning=function(w){print(w)}, finally={})} else if (!is.list(data)){
@@ -417,6 +422,7 @@ oppti = function(data, panel = 'global', cohort.names = NULL, tol.nas = 20,
         or a "character" string referring to the file path of such object.');
         return()}
     if (!methods::is(data, 'list')) {data = list(data)}
+    if (mad.norm) {data = lapply(data, function(x){x=madNorm(x)})}
     if (is.null(cohort.names)) {cohort.names = unlist(lapply(data, function(x){
         x=strsplit(colnames(x)[1],'\\.')[[1]][1]}))} #cohort names
     pan.num = length(cohort.names) #number of cohorts
@@ -431,16 +437,11 @@ oppti = function(data, panel = 'global', cohort.names = NULL, tol.nas = 20,
     pan.mar = rownames(pan.dat[[1]]); if (pan.num>1) {for (i in 2:pan.num) {
         pan.mar = intersect(pan.mar, rownames(pan.dat[[i]]))}}
         #determine markers quantified pan-cancer
-    # Load panel markers
-    switch(panel
-        , 'global' = (panel.markers = unique(unlist(lapply(data,function(x)
-            {x=rownames(x)}))))
-        , 'pancan' = (panel.markers = pan.mar)
-        , 'drugge' = (panel.markers = readRDS(file = 'data/drug.genes.RDS'))
-        , 'kinase' = (panel.markers = readRDS(file = 'data/kinase.genes.RDS'))
-        , 'immune' = (panel.markers =
-            readRDS(file = 'data/immune.checkpoint.genes.RDS'))
-    )
+    if (is.null(panel.markers)) {
+        switch(panel, 'global' = (panel.markers =
+            unique(unlist(lapply(data,function(x) {x=rownames(x)})))),
+            'pancan' = (panel.markers = pan.mar))
+    }
     # Define which markers to process in each cancer
     pan.proc.markers = lapply(pan.dat, function(x){x=panel.markers[
         panel.markers %in% rownames(x)]})
