@@ -25,6 +25,6 @@ scatter plots.
 the scatter plots.
 }
 \description{
-For each marker processed, draws a 2D scatter plot of matching
+For each marker processed, draws a scatter plot of matching
 values of observed vs imputed expressions.
 }
