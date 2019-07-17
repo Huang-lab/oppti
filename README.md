@@ -1,20 +1,20 @@
 Analyze proteomics data of a single cohort
 ==========================================
 
-You can easily analyze outlying (dysregulated) markers for each sample in a cohort. Lets generate a toy proteomics data for a cohort of 30 tumor samples, each quantifying 100 proteins.
+You can easily analyze outlying (dysregulated) markers for each sample in a cohort. Lets generate a toy proteomics data for a cohort of 30 disease samples, each quantifying 100 proteins.
 
 ``` r
 set.seed(1)
-cohort1.proteome = as.data.frame(matrix(abs(rnorm(100*30)), 100, 30)) 
-rownames(cohort1.proteome) = paste('marker', 1:100, sep = '')
-colnames(cohort1.proteome) = paste('cohort1.sample', 1:30, sep = '')
+cohort1.proteomes = as.data.frame(matrix(abs(rnorm(100*30)), 100, 30)) 
+rownames(cohort1.proteomes) = paste('marker', 1:100, sep = '')
+colnames(cohort1.proteomes) = paste('cohort1.sample', 1:30, sep = '')
 ```
 
 Outlier analysis is run by the `oppti` function:
 
 ``` r
 library(oppti)
-result = oppti(cohort1.proteome)
+result = oppti(cohort1.proteomes)
 ```
 
 The outlier scores of each marker in each sample are then returned in the first element of the result:
@@ -36,23 +36,23 @@ cohort1.outlier.scores = result[[1]]
 | marker9  |            -0.21|            -0.48|            -0.80|             0.02|
 | marker10 |            -0.36|             0.74|            -0.36|            -0.55|
 
-In this toy example, marker5 has a (somewhat) elevated outlier score in sample3, suggesting a protruding expression in the tumor tissue of sample3 relative to a normal state (i.e., the consensus co-expression network inferred for marker5). Note that a negative sign in the outlier score indicates a negative dysregulation event, i.e., relatively "lower" protein expression is expected in the observed tumor state compared to the normal state. The landscape of these aberrant expressions analyzed for a cohort of individuals may serve for the discovery of personalized actionable targets.
+In this toy example, marker5 has a (somewhat) elevated outlier score in sample3, suggesting a protruding expression in the disease state of sample3 relative to a normal state (i.e., the consensus co-expression network inferred for marker5). Note that a negative sign in the outlier score indicates a negative dysregulation event, i.e., relatively "lower" protein expression is expected in the observed disease state compared to the normal state. The landscape of these aberrant expressions analyzed for a cohort of individuals may serve for the discovery of personalized actionable targets.
 
 Analyze proteomics data of multiple cohorts
 ===========================================
 
-For pan-cancer analyses, the normalized proteomics data from different cohorts can be supplied to `oppti` in a list object. Lets generate another toy proteomics data for a separate cohort of 20 tumor samples, each quantifying 80 proteins (say, 50 of which are overlapping with those quantified in the first cohort).
+For pan-cancer analyses, the normalized proteomics data from different cohorts can be supplied to `oppti` in a list object. Lets generate another toy proteomics data for a separate cohort of 20 disease samples, each quantifying 80 proteins (say, 50 of which are overlapping with those quantified in the first cohort).
 
 ``` r
-cohort2.proteome = as.data.frame(matrix(abs(rnorm(80*20)), 80, 20)) 
-rownames(cohort2.proteome) = paste('marker', 51:130, sep = '')
-colnames(cohort2.proteome) = paste('cohort2.sample', 31:50, sep = '')
+cohort2.proteomes = as.data.frame(matrix(abs(rnorm(80*20)), 80, 20)) 
+rownames(cohort2.proteomes) = paste('marker', 51:130, sep = '')
+colnames(cohort2.proteomes) = paste('cohort2.sample', 31:50, sep = '')
 ```
 
 To run `oppti` for both cohorts, the data are simply fed in a single list object:
 
 ``` r
-result = oppti(list(cohort1.proteome,cohort2.proteome))
+result = oppti(list(cohort1.proteomes,cohort2.proteomes))
 ```
 
 Again, the outlier scores of each marker in each sample are returned in the first element of the result.
@@ -98,3 +98,17 @@ cohort2.outlier.scores = outlier.scores[[2]]
 | marker58 |             -0.41|              0.00|              0.23|              0.64|
 | marker59 |              0.19|              0.15|             -0.15|             -0.03|
 | marker60 |              0.07|             -0.39|              0.28|             -0.33|
+
+One can analyze the markers in terms of outlying events they exhibit across the cohort by using the `draw.sc.plots` flag. The outlier samples will be marked on a scatter plot of the disease (observed) vs normal (imputed) expressions. You can always set `panel.markers` parameter to restrict your analysis to a specific set of markers.
+
+``` r
+result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.sc.plots = TRUE,
+    panel.markers = rownames(cohort1.proteomes)[46:55])
+```
+
+To dislay the summary results of the markers' outlying events across cohorts you can use `draw.ou.plots`:
+
+``` r
+result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.ou.plots = TRUE,
+    panel.markers = rownames(cohort1.proteomes)[46:55])
+```
