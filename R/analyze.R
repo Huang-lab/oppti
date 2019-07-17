@@ -133,7 +133,7 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
     return(as.matrix(dat.imp))
 }
 #' @title Analyze dysregulated (protruding) events
-#' @description For each marker processed, draws a 2D scatter plot of matching
+#' @description For each marker processed, draws a scatter plot of matching
 #' values of observed vs imputed expressions.
 #' @param dat an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
@@ -451,6 +451,8 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
 #' (by the percentage of outlying samples) across the cohorts.
 #' @param verbose logical, to show progress of the algorithm.
 #' @return dysregulation scores of every marker for each sample.
+#' @return the imputed data that putatively represents the expressions of the
+#' markers in the (matched) normal states.
 #' @return the result of Kolmogorov-Smirnov tests that evaluates the
 #' statistical significance of each marker's outlier samples.
 #' @return a data list containing, for each cohort, the percentage of outlier
@@ -581,7 +583,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         colnames(tmp) = colnames(pan.mar.out.exp.per)
         pan.mar.ranked.out.exp.per.tree = clusterData(tmp,
             cluster_cols = FALSE, cluster_rows = FALSE,
-            display_numbers = FALSE, main = 'In-cohort outlier perce.')[[1]]
+            display_numbers = FALSE, main = '% of outliers')[[1]]
         pdf(paste('pan.cancer.',panel,'.markers.outlier.scores.pdf', sep = ''),
             w = max(2,ceiling((ncol(tmp))**(.7)-1)),
             h = max(2,ceiling((nrow(tmp))**(.7)-2)))
@@ -599,7 +601,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         rownames(tmp) = colnames(pan.mar.out.exp.per)
         pan.mar.ranked20.t.out.exp.per.tree = clusterData(tmp,
             cluster_cols = FALSE, cluster_rows = FALSE, display_numbers = TRUE,
-            main = 'In-cohort outlier perce.')[[1]]
+            main = '% of outliers')[[1]]
         pdf(paste('pan.cancer.',panel,'.top20.highly.outlying.markers.pdf',
             sep = ''), w = max(2,ceiling((ncol(tmp))**(.7)-1)),
             h = max(2,ceiling((nrow(tmp))**(.7)-2)))
@@ -616,7 +618,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
                             pan.mar.out.exp.per.sd.sor$x)])))],])
             pan.mar.ranked20.t.sd.out.exp.per.tree = clusterData(tmp,
                 cluster_cols = FALSE, cluster_rows = FALSE,
-                display_numbers = TRUE, main = 'In-cohort outlier perce.')[[1]]
+                display_numbers = TRUE, main = '% of outliers')[[1]]
             pdf(paste('pan.cancer.',panel,
                 '.top20.variably.outlying.markers.pdf', sep = ''),
                 w = max(2,ceiling((ncol(tmp))**(.7)-1)),
@@ -625,9 +627,10 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         }
     }
     if (pan.num>1){
-        return(list(pan.dat.dys, pan.dat.imp.test, pan.marker.out.exp.per))
+        return(list(pan.dat.dys, pan.dat.imp, pan.dat.imp.test,
+                    pan.marker.out.exp.per))
     } else {
-        return(list(pan.dat.dys[[1]], pan.dat.imp.test[[1]],
+        return(list(pan.dat.dys[[1]], pan.dat.imp[[1]], pan.dat.imp.test[[1]],
                     pan.marker.out.exp.per[[1]]))
     }
 }
