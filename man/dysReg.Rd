@@ -7,15 +7,15 @@
 dysReg(dat, dat.imp, marker.proc.list, verbose = FALSE)
 }
 \arguments{
-\item{dat, }{an object of log2-normalized gene (or protein) expressions,
+\item{dat}{an object of log2-normalized gene (or protein) expressions,
 containing markers in rows and samples in columns.}
 
-\item{dat.imp, }{the imputed data that likely represents the expressions of
+\item{dat.imp}{the imputed data that likely represents the expressions of
 the markers in the (matched) normal samples.}
 
-\item{marker.proc.list, }{the rownames of the data to be processed/imputed.}
+\item{marker.proc.list}{the rownames of the data to be processed/imputed.}
 
-\item{verbose, }{logical, to show progress of the algorithm}
+\item{verbose}{logical, to show progress of the algorithm}
 }
 \value{
 dat.dys, samples' distances to regression line (i.e., dysregulation)
@@ -24,6 +24,6 @@ in the scatter plots.
 plot.list, the scatter plots.
 }
 \description{
-For each marker processed, draws a 2D scatter plot of maching
+For each marker processed, draws a 2D scatter plot of matching
 values of observed vs imputed expressions.
 }

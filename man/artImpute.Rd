@@ -9,19 +9,19 @@ artImpute(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 0.4,
 verbose = FALSE)
 }
 \arguments{
-\item{dat, }{an object of log2-normalized gene (or protein) expressions,
+\item{dat}{an object of log2-normalized gene (or protein) expressions,
 containing markers in rows and samples in columns.}
 
-\item{ku, }{an integer in [1,num.markers], upper bound on the number of
+\item{ku}{an integer in [1,num.markers], upper bound on the number of
 nearest neighbors of a marker}
 
-\item{marker.proc.list, }{the rownames of the data to be processed/imputed.}
+\item{marker.proc.list}{the rownames of the data to be processed/imputed.}
 
-\item{miss.pstat, }{the score threshold for ignoring potential outliers
+\item{miss.pstat}{the score threshold for ignoring potential outliers
 during imputation. miss.pstat = 1 ignores values outside of the box (i.e.,
 1st-3rd quartiles).}
 
-\item{verbose, }{logical, to show progress of the algorithm
+\item{verbose}{logical, to show progress of the algorithm
 The algorithm ignores values lying at least (1/miss.pstat)-1 times IQR away
 from the box; e.g., use miss.pstat=1 to ignore all values lying outside of
 the box; use miss.pstat=0.4 to ignore values lying at least 1.5 x IQR away
@@ -33,7 +33,14 @@ the markers in the (matched) normal cohort.
 }
 \description{
 Infers the normal-state expression of a marker based on its
-coexpression network, i.e., the weigted average of the marker's nearest
+co-expression network, i.e., the weighted average of the marker's nearest
 neighbors in the data. The returned imputed data will later be used to
 elucidate protruding (dysregulated) events.
+}
+\examples{
+m = 5; n = 10
+dat = matrix(1:(m*n),m,n) # input data
+out = 1-matrix(.99*round(.6*runif(length(dat))),m,n) # p-statistic of each
+# data entry for being a potential outlier and ignored during imputation
+imp = artImpute(dat = dat, ku = 2) # imputed data
 }

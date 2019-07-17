@@ -8,19 +8,19 @@ dropMarkers(dat, percent_NA = 0.2, low_mean_and_std = 0.05,
 q_low_var = 0.25, force_drop = NULL)
 }
 \arguments{
-\item{dat, }{an object of log2-normalized gene (or protein) expressions,
+\item{dat}{an object of log2-normalized gene (or protein) expressions,
 containing markers in rows and samples in columns.}
 
-\item{percent_NA, }{a constant in [0,1], is the percentage of missing values
+\item{percent_NA}{a constant in [0,1], is the percentage of missing values
 that will be tolerated in the filtered data.}
 
-\item{low_mean_and_std, }{a constant in [0,inf], is the lower-bound of the
+\item{low_mean_and_std}{a constant in [0,inf], is the lower-bound of the
 mean or standard deviation of a marker in the filtered data.}
 
-\item{q_low_var, }{a constant in [0,1], is the quantile of marker variances
+\item{q_low_var}{a constant in [0,1], is the quantile of marker variances
 which serves as a lower-bound of the marker variances in the filtered data.}
 
-\item{force_drop, }{character array containing the marker names that user
+\item{force_drop}{character array containing the marker names that user
 specifically wants to filter out}
 }
 \value{
@@ -29,6 +29,6 @@ dropped_marker_names, rownames (markers) of the data that are filtered out
 due to low-expression or low-variability.
 }
 \description{
-Filters out markers based on the percantage of missing values,
+Filters out markers based on the percentage of missing values,
 low-expression and low-variability rates.
 }

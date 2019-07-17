@@ -7,15 +7,15 @@
 statTest(dat, dat.imp, marker.proc.list, pval.insig = 0.2)
 }
 \arguments{
-\item{dat, }{an object of log2-normalized gene (or protein) expressions,
+\item{dat}{an object of log2-normalized gene (or protein) expressions,
 containing markers in rows and samples in columns.}
 
-\item{dat.imp, }{the imputed data that likely represents the expressions of
+\item{dat.imp}{the imputed data that likely represents the expressions of
 the markers in the (matched) normal samples.}
 
-\item{marker.proc.list, }{the rownames of the data to be processed/imputed.}
+\item{marker.proc.list}{the rownames of the data to be processed/imputed.}
 
-\item{pval.insig, }{p-value threshold to determine spurious (null)
+\item{pval.insig}{p-value threshold to determine spurious (null)
 dysregulation events.}
 }
 \value{
@@ -25,7 +25,7 @@ KS test.
 dat.imp.test.sig, ranked p-values (KS test) of the significant
 markers that are lower than pval.insig.
 
-markers.imp.sig, ranked significantly-dysregulated markers with
+markers.imp.sig, ranked significantly dysregulated markers with
 p-values lower than pval.insig.
 
 dat.imp.test.insig, ranked p-values (KS test) of the insignificant

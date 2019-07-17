@@ -9,32 +9,32 @@ dys.sig.thr.upp, dataset, num.omit.fit = NULL, draw.sc = TRUE,
 draw.vi = TRUE)
 }
 \arguments{
-\item{marker.proc.list, }{the given markers to be processed.}
+\item{marker.proc.list}{the given markers to be processed.}
 
-\item{dat, }{an object of log2-normalized gene (or protein) expressions,
+\item{dat}{an object of log2-normalized gene (or protein) expressions,
 containing markers in rows and samples in columns.}
 
-\item{dat.imp, }{the imputed data that likely represents the expressions of
+\item{dat.imp}{the imputed data that likely represents the expressions of
 the markers in the (matched) normal samples.}
 
-\item{dat.imp.test, }{p-values of the markers significance computed by the KS
+\item{dat.imp.test}{p-values of the markers significance computed by the KS
 test.}
 
-\item{dat.dys, }{samples' distances to regression line (i.e., dysregulation)
+\item{dat.dys}{samples' distances to regression line (i.e., dysregulation)
 in the scatter plots.}
 
-\item{dys.sig.thr.upp, }{the dysregulation score threshold to elucidate/mark
+\item{dys.sig.thr.upp}{the dysregulation score threshold to elucidate/mark
 significantly dysregulated outlier events.}
 
-\item{dataset, }{the cohort name to be used in the output files.}
+\item{dataset}{the cohort name to be used in the output files.}
 
-\item{num.omit.fit, }{number of outlying events to ignore when fitting a
+\item{num.omit.fit}{number of outlying events to ignore when fitting a
 marker's observed expressions to the imputed ones.}
 
-\item{draw.sc, }{logical, to draw a scatter plot for every marker in
+\item{draw.sc}{logical, to draw a scatter plot for every marker in
 marker.proc.list in a separate PDF file.}
 
-\item{draw.vi, }{logical, to draw a violin plot for every marker in
+\item{draw.vi}{logical, to draw a violin plot for every marker in
 marker.proc.list in a separate PDF file.}
 }
 \value{

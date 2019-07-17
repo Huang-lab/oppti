@@ -10,55 +10,55 @@ demo.panels = FALSE, save.data = FALSE, draw.sc.plots = FALSE,
 draw.vi.plots = FALSE, draw.ou.plots = FALSE, verbose = FALSE)
 }
 \arguments{
-\item{data, }{a list object where each element contains a proteomics data for
+\item{data}{a list object where each element contains a proteomics data for
 a different cohort (markers in the rows, samples in the columns) or
 character string defining the path to such data (in .RDS format)}
 
-\item{mad.norm, }{logical, to normalize the proteomes to have a unit Median
+\item{mad.norm}{logical, to normalize the proteomes to have a unit Median
 Absolute Deviation}
 
-\item{cohort.names, }{character array}
+\item{cohort.names}{character array}
 
 \item{panel, }{a character string describing marker panel, e.g., 'kinases'
-use 'global' to analyze all markers quantified accross cohorts (default)
-use 'pancan' to analyze the markers commonly quantified accross the cohorts}
+use 'global' to analyze all markers quantified across cohorts (default)
+use 'pancan' to analyze the markers commonly quantified across the cohorts}
 
-\item{panel.markers, }{a character array containing the set of marker names
+\item{panel.markers}{a character array containing the set of marker names
 that user wants to analyze, e.g., panel.markers = c("AAK1", "AATK", "ABL1",
 "ABL2", ...)}
 
-\item{tol.nas, }{a constant in [0,100], tolerance for the percentage of NAs
-in a marker, e.g., tol.nas = 20 will filter out markers contatining 20% or
+\item{tol.nas}{a constant in [0,100], tolerance for the percentage of NAs
+in a marker, e.g., tol.nas = 20 will filter out markers containing 20% or
 more NAs}
 
-\item{ku, }{an integer in [1,num.markers], upper bound on the number of
+\item{ku}{an integer in [1,num.markers], upper bound on the number of
 nearest neighbors of a marker}
 
-\item{miss.pstat, }{a constant in [0,1], statistic to estimate potential
+\item{miss.pstat}{a constant in [0,1], statistic to estimate potential
 outliers, 0.4 ~= q75+1.5*IQR}
 
-\item{demo.panels, }{logical, to draw demographics of the panel in each
+\item{demo.panels}{logical, to draw demographics of the panel in each
 cancer cohort}
 
-\item{save.data, }{logical, to save intermediate data (background inference
+\item{save.data}{logical, to save intermediate data (background inference
 and dysregulation measures)}
 
-\item{draw.sc.plots, }{logical, to draw each marker's qqplot of observed vs
+\item{draw.sc.plots}{logical, to draw each marker's qqplot of observed vs
 inferred (imputed) expressions}
 
-\item{draw.vi.plots, }{logical, to draw each marker's violin plot of observed
+\item{draw.vi.plots}{logical, to draw each marker's violin plot of observed
 vs imputed expressions}
 
-\item{draw.ou.plots, }{logical, to draw each marker's outlier prevalence
+\item{draw.ou.plots}{logical, to draw each marker's outlier prevalence
 (by the percentage of outlying samples) across the cohorts}
 
-\item{verbose, }{logical, to show progress of the algorithm}
+\item{verbose}{logical, to show progress of the algorithm}
 }
 \value{
 pan.dat.dys, dysregulation scores of every marker per each sample;
 pan.dat.imp.test, the result of KS tests that evaluates the statistical
 significance of each marker's outlier samples;
-pan.marker.out.exp.per, a data list contatining, for each cohort, the
+pan.marker.out.exp.per, a data list containing, for each cohort, the
 percentage of outlier samples for every marker
 }
 \description{
