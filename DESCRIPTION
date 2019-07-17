@@ -28,5 +28,7 @@ biocViews:
     Regression,
     DifferentialExpression,
     BiomedicalInformatics,
-    GeneTarget
+    GeneTarget,
+    GeneExpression,
+    Network
 RoxygenNote: 6.1.1
