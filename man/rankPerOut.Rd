@@ -8,16 +8,18 @@ rankPerOut(dat.dys, marker.proc.list, dys.sig.thr.upp)
 }
 \arguments{
 \item{dat.dys}{samples' distances to regression line (i.e., dysregulation)
-in the scatter plots.}
+on the scatter plots.}
 
-\item{marker.proc.list}{the given markers to be processed.}
+\item{marker.proc.list}{character array, the rownames of the data to be
+processed for outlier analyses.}
 
 \item{dys.sig.thr.upp}{the dysregulation score threshold to elucidate/mark
 significantly dysregulated outlier events.}
 }
 \value{
-ranked markers are returned in marker.out.exp.per.sor.names with
-corresponding percentages in marker.out.exp.per.
+markers rank-ordered by the percentage of outliers over the samples.
+
+the percentages of outliers corresponding to ranked markers.
 }
 \description{
 Ranks markers in the order of decreasing percentage of outlying

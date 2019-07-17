@@ -7,35 +7,36 @@
 statTest(dat, dat.imp, marker.proc.list, pval.insig = 0.2)
 }
 \arguments{
-\item{dat}{an object of log2-normalized gene (or protein) expressions,
+\item{dat}{an object of log2-normalized protein (or gene) expressions,
 containing markers in rows and samples in columns.}
 
-\item{dat.imp}{the imputed data that likely represents the expressions of
-the markers in the (matched) normal samples.}
+\item{dat.imp}{the imputed data that putatively represents the expressions
+of the markers in the (matched) normal states.}
 
-\item{marker.proc.list}{the rownames of the data to be processed/imputed.}
+\item{marker.proc.list}{character array, the rownames of the data to be
+processed for dysregulation significance.}
 
 \item{pval.insig}{p-value threshold to determine spurious (null)
 dysregulation events.}
 }
 \value{
-dat.imp.test, p-values of the markers significance computed by the
-KS test.
+each marker's p-value of the statistical significance between its
+observed vs imputed values computed by the KS test.
 
-dat.imp.test.sig, ranked p-values (KS test) of the significant
-markers that are lower than pval.insig.
+ranked p-values (KS test) of the significant markers, which are
+lower than pval.insig.
 
-markers.imp.sig, ranked significantly dysregulated markers with
-p-values lower than pval.insig.
+ranked significantly dysregulated markers with p-values lower than
+pval.insig.
 
-dat.imp.test.insig, ranked p-values (KS test) of the insignificant
-markers that are greater than pval.insig.
+ranked p-values (KS test) of the insignificant markers, which are
+greater than pval.insig.
 
-markers.imp.insig, ranked markers exhibiting spurious (null)
-dysregulation events with p-values greater than pval.insig.
+ranked insignificantly dysregulated markers (spurious
+dysregulations) with p-values greater than pval.insig.
 }
 \description{
-Rank markers by the significance of deviation of the observed
-expressions from the (matched) imputed expressions based on the
+Rank-order markers by the significance of deviation of the
+observed expressions from the (matched) imputed expressions based on the
 Kolmogorov-Smirnov (KS) test.
 }

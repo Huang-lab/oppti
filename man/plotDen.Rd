@@ -8,7 +8,7 @@ plotDen(dat, name = "", per.plot = 8, main = NULL, group = NULL,
 legend = TRUE)
 }
 \arguments{
-\item{dat}{an object of log2-normalized gene (or protein) expressions,
+\item{dat}{an object of log2-normalized protein (or gene) expressions,
 containing markers in rows and samples in columns.}
 
 \item{name}{name tag for the output file.}
@@ -16,16 +16,16 @@ containing markers in rows and samples in columns.}
 \item{per.plot}{number of densities to be drawn on a single plot. If NULL,
 ncol(object) will be used.}
 
-\item{main}{character string, an overall title for the plot}
+\item{main}{character string, an overall title for the plot.}
 
 \item{group}{vector or factor classifying the arrays into groups. Should be
 same length as ncol(object).}
 
-\item{legend}{character string giving position to place legend. See legend
+\item{legend}{character string giving position to place legend. See `legend`
 for possible values. Can also be logical, with FALSE meaning no legend.}
 }
 \value{
-a (number) pdf plot(s)
+pdf plot(s).
 }
 \description{
 Draw column densities of an object over multiple plots by using

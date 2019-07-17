@@ -2,26 +2,27 @@
 % Please edit documentation in R/analyze.R
 \name{dysReg}
 \alias{dysReg}
-\title{Analyze protruding (dysregulated) events}
+\title{Analyze dysregulated (protruding) events}
 \usage{
 dysReg(dat, dat.imp, marker.proc.list, verbose = FALSE)
 }
 \arguments{
-\item{dat}{an object of log2-normalized gene (or protein) expressions,
+\item{dat}{an object of log2-normalized protein (or gene) expressions,
 containing markers in rows and samples in columns.}
 
-\item{dat.imp}{the imputed data that likely represents the expressions of
-the markers in the (matched) normal samples.}
+\item{dat.imp}{the imputed data that putatively represents the expressions
+of the markers in the (matched) normal states.}
 
-\item{marker.proc.list}{the rownames of the data to be processed/imputed.}
+\item{marker.proc.list}{character array, the rownames of the data to be
+processed for dysregulation.}
 
 \item{verbose}{logical, to show progress of the algorithm}
 }
 \value{
-dat.dys, samples' distances to regression line (i.e., dysregulation)
-in the scatter plots.
+samples' distances to regression line (i.e., dysregulation) on the
+scatter plots.
 
-plot.list, the scatter plots.
+the scatter plots.
 }
 \description{
 For each marker processed, draws a 2D scatter plot of matching

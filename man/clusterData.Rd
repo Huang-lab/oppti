@@ -13,7 +13,7 @@ cluster_rows = TRUE, cluster_cols = TRUE,
 annotate_new_clusters_col = FALSE, zero_white = FALSE)
 }
 \arguments{
-\item{data}{an object of log2-normalized gene (or protein) expressions,
+\item{data}{an object of log2-normalized protein (or gene) expressions,
 containing markers in rows and samples in columns.}
 
 \item{annotation_row}{data frame that specifies the annotations shown on
@@ -26,15 +26,15 @@ variable is continuous or discrete.}
 
 \item{annotation_colors}{list for specifying annotation_row and
 annotation_col track colors manually. It is possible to define the colors
-for only some of the features. Check examples for details.}
+for only some of the features.}
 
-\item{main}{character string, an overall title for the plot}
+\item{main}{character string, an overall title for the plot.}
 
 \item{stringency_col}{distinctiveness of the clusters (column) to be
-identified by the metafeatures algorithm (proportional to num. of clusters)}
+identified by the metafeatures algorithm (proportional to num. of clusters).}
 
 \item{stringency_row}{distinctiveness of the clusters (row) to be
-identified by the metafeatures algorithm (proportional to num. of clusters)}
+identified by the metafeatures algorithm (proportional to num. of clusters).}
 
 \item{clustering_distance_rows}{distance measure used in clustering rows.
 Possible values are "correlation" for Pearson correlation and all the
@@ -50,30 +50,32 @@ matrix), the contents of the matrix are shown instead of original values.}
 
 \item{num_clusters_row}{number of clusters the rows are divided into, based
 on the hierarchical clustering (using cutree), if rows are not clustered,
-the argument is ignored}
+the argument is ignored.}
 
-\item{num_clusters_col}{similar to cutree_rows, but for columns}
+\item{num_clusters_col}{similar to num_clusters_row, but for columns.}
 
 \item{cluster_rows}{logical, determining if the rows should be clustered;
-or hclust object}
+or a hclust object.}
 
-\item{cluster_cols}{similar to cluster_rows, but for columns}
+\item{cluster_cols}{similar to cluster_rows, but for columns.}
 
 \item{annotate_new_clusters_col}{logical, to annotate cluster IDs (column)
-that will be identified}
+that will be identified.}
 
-\item{zero_white}{logical, to display 0 values as white in the colormap}
+\item{zero_white}{logical, to display 0 values as white in the colormap.}
 }
 \value{
-tree, the hierarchical tree structure; cluster_IDs_row, and
-cluster_IDs_col, the cluster identities of the markers and
-samples, respectively.
+tree, the hierarchical tree structure.
+
+cluster_IDs_row, the (row) cluster identities of the markers.
+
+cluster_IDs_col, the (column) cluster identities of the samples.
 }
 \description{
 Displays the hierarchically clustered data by the "pheatmap"
 package.
-The number of cluster along the markers/samples are estimated by a
+The numbers of clusters along the markers/samples are estimated by the
 multivariate metafeatures algorithm (https://github.com/weiyi-bitw/cafr).
-Optionally, they can be set by the user then cluster structures are
+Optionally, the numbers can be set by the user, then cluster structures are
 estimated by pair-wise analysis of the markers/samples.
 }

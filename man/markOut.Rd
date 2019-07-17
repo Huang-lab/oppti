@@ -9,19 +9,20 @@ dys.sig.thr.upp, dataset, num.omit.fit = NULL, draw.sc = TRUE,
 draw.vi = TRUE)
 }
 \arguments{
-\item{marker.proc.list}{the given markers to be processed.}
+\item{marker.proc.list}{character array, the rownames of the data to be
+processed for outlier analyses and for plotting.}
 
-\item{dat}{an object of log2-normalized gene (or protein) expressions,
+\item{dat}{an object of log2-normalized protein (or gene) expressions,
 containing markers in rows and samples in columns.}
 
-\item{dat.imp}{the imputed data that likely represents the expressions of
-the markers in the (matched) normal samples.}
+\item{dat.imp}{the imputed data that putatively represents the expressions
+of the markers in the (matched) normal states.}
 
-\item{dat.imp.test}{p-values of the markers significance computed by the KS
-test.}
+\item{dat.imp.test}{marker's p-value of the statistical significance between
+its observed vs imputed values computed by the Kolmogorov-Smirnov test.}
 
 \item{dat.dys}{samples' distances to regression line (i.e., dysregulation)
-in the scatter plots.}
+on the scatter plots.}
 
 \item{dys.sig.thr.upp}{the dysregulation score threshold to elucidate/mark
 significantly dysregulated outlier events.}
@@ -38,8 +39,8 @@ marker.proc.list in a separate PDF file.}
 marker.proc.list in a separate PDF file.}
 }
 \value{
-plot.list.marked, the scatter plots of the markers where the outlier
-dysregulation events are highlighted by red mark.
+the scatter plots of the markers where the outlier dysregulation
+events are highlighted by red mark.
 }
 \description{
 Mark outlying expressions on the scatter plot of a given marker
