@@ -2,7 +2,7 @@
 #
 #   cbindNA
 #
-#   Binds arbitrary-length columns given in a list into a dataframe with
+#   Binds arbitrary-length columns given in a list into a data frame with
 #     NA-filled ends.
 #
 cbindNA = function(X = list(seq_len(2),seq_len(3),seq_len(4))){
@@ -20,6 +20,7 @@ cbindNA = function(X = list(seq_len(2),seq_len(3),seq_len(4))){
 #     from 1st/3rd (box) quartiles.
 #   If the value lies within the box the score is 1, if it lies further away
 #     from the box the score gets closer to 0.
+#
 #   Returns, an object of the same class as dat containing the potential
 #     outlier scores.
 #
@@ -44,10 +45,10 @@ outScores = function(dat) {
 #
 #   gqplot
 #
-#   Draws a scatter plot based on the grammer of graphics (ggplot2), then
+#   Draws a scatter plot based on the grammar of graphics (ggplot2), then
 #     draws a regression line and displays a confidence interval around it.
 #
-#   Returns each data point's distance to the regresion line, and the plot.
+#   Returns each data point's distance to the regression line, and the plot.
 #
 gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
     d.thr = 0, na.action = 'omit', samp.names = NULL, marker.name = NULL,
