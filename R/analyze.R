@@ -1,19 +1,19 @@
 #' @title Filter out markers
 #' @description Filters out markers based on the percentage of missing values,
 #' low-expression and low-variability rates.
-#' @param dat an object of log2-normalized gene (or protein) expressions,
+#' @param dat an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
-#' @param percent_NA a constant in [0,1], is the percentage of missing values
+#' @param percent_NA a constant in [0,1], the percentage of missing values
 #' that will be tolerated in the filtered data.
-#' @param low_mean_and_std a constant in [0,inf], is the lower-bound of the
+#' @param low_mean_and_std a constant in [0,inf], the lower-bound of the
 #' mean or standard deviation of a marker in the filtered data.
-#' @param q_low_var a constant in [0,1], is the quantile of marker variances
+#' @param q_low_var a constant in [0,1], the quantile of marker variances
 #' which serves as a lower-bound of the marker variances in the filtered data.
 #' @param force_drop character array containing the marker names that user
-#' specifically wants to filter out
-#' @return data_filtered, with same class as the input data;
-#' dropped_marker_names, rownames (markers) of the data that are filtered out
-#' due to low-expression or low-variability.
+#' specifically wants to filter out.
+#' @return filtered data with the same format as the input data.
+#' @return the rownames (markers) of the data that are filtered out due to
+#' low-expression or low-variability.
 dropMarkers = function(dat, percent_NA = .2, low_mean_and_std = .05,
     q_low_var = .25, force_drop = NULL){
     if (!is.null(force_drop)) {dat = dat[!(rownames(dat) %in% force_drop),]}
@@ -37,17 +37,17 @@ dropMarkers = function(dat, percent_NA = .2, low_mean_and_std = .05,
 #' @title Draw densities
 #' @description Draw column densities of an object over multiple plots by using
 #' limma::plotDensities() function.
-#' @param dat an object of log2-normalized gene (or protein) expressions,
+#' @param dat an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
 #' @param name name tag for the output file.
 #' @param per.plot number of densities to be drawn on a single plot. If NULL,
 #' ncol(object) will be used.
-#' @param main character string, an overall title for the plot
+#' @param main character string, an overall title for the plot.
 #' @param group vector or factor classifying the arrays into groups. Should be
 #' same length as ncol(object).
-#' @param legend character string giving position to place legend. See legend
+#' @param legend character string giving position to place legend. See `legend`
 #' for possible values. Can also be logical, with FALSE meaning no legend.
-#' @return a (number) pdf plot(s)
+#' @return pdf plot(s).
 plotDen = function(dat, name = '', per.plot = 8, main = NULL, group = NULL,
     legend = TRUE){
     if (is.null(per.plot)) {per.plot = ncol(dat)}
@@ -65,28 +65,25 @@ plotDen = function(dat, name = '', per.plot = 8, main = NULL, group = NULL,
 #' @description Infers the normal-state expression of a marker based on its
 #' co-expression network, i.e., the weighted average of the marker's nearest
 #' neighbors in the data. The returned imputed data will later be used to
-#' elucidate protruding (dysregulated) events.
-#' @param dat an object of log2-normalized gene (or protein) expressions,
+#' elucidate dysregulated (protruding) events.
+#' @param dat an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
 #' @param ku an integer in [1,num.markers], upper bound on the number of
-#' nearest neighbors of a marker
-#' @param marker.proc.list the rownames of the data to be processed/imputed.
+#' nearest neighbors of a marker.
+#' @param marker.proc.list character array, the rownames of the data to be
+#' processed/imputed.
 #' @param miss.pstat the score threshold for ignoring potential outliers
-#' during imputation. miss.pstat = 1 ignores values outside of the box (i.e.,
-#' 1st-3rd quartiles).
-#' @param verbose logical, to show progress of the algorithm
-#' The algorithm ignores values lying at least (1/miss.pstat)-1 times IQR away
-#' from the box; e.g., use miss.pstat=1 to ignore all values lying outside of
-#' the box; use miss.pstat=0.4 to ignore values lying at least 1.5 x IQR away
-#' from the box; use miss.pstat=0 to employ all data during imputation.
-#' @return dat.imp, the imputed data that likely represents the expressions of
-#' the markers in the (matched) normal cohort.
+#' during imputation. miss.pstat = 1 ignores values outside of the density box
+#' (i.e., 1st-3rd quartiles). The algorithm ignores values lying at least
+#' (1/miss.pstat)-1 times IQR away from the box; e.g., use miss.pstat=1 to
+#' ignore all values lying outside of the box; use miss.pstat=0.4 to ignore
+#' values lying at least 1.5 x IQR away from the box; use miss.pstat=0 to
+#' employ all data during imputation.
+#' @param verbose logical, to show progress of the algorithm.
+#' @return the imputed data that putatively represents the expressions of the
+#' markers in the (matched) normal states.
 #' @examples
-#' m = 5; n = 10
-#' dat = matrix(1:(m*n),m,n) # input data
-#' out = 1-matrix(.99*round(.6*runif(length(dat))),m,n) # p-statistic of each
-#' # data entry for being a potential outlier and ignored during imputation
-#' imp = artImpute(dat = dat, ku = 2) # imputed data
+#' imputed = artImpute(dat = matrix(1:(5*10),5,10), ku = 2)
 artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
     verbose = FALSE) {
     out.pstats = outScores(dat)
@@ -135,18 +132,19 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
     }
     return(as.matrix(dat.imp))
 }
-#' @title Analyze protruding (dysregulated) events
+#' @title Analyze dysregulated (protruding) events
 #' @description For each marker processed, draws a 2D scatter plot of matching
 #' values of observed vs imputed expressions.
-#' @param dat an object of log2-normalized gene (or protein) expressions,
+#' @param dat an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
-#' @param dat.imp the imputed data that likely represents the expressions of
-#' the markers in the (matched) normal samples.
-#' @param marker.proc.list the rownames of the data to be processed/imputed.
+#' @param dat.imp the imputed data that putatively represents the expressions
+#' of the markers in the (matched) normal states.
+#' @param marker.proc.list character array, the rownames of the data to be
+#' processed for dysregulation.
 #' @param verbose logical, to show progress of the algorithm
-#' @return dat.dys, samples' distances to regression line (i.e., dysregulation)
-#' in the scatter plots.
-#' @return plot.list, the scatter plots.
+#' @return samples' distances to regression line (i.e., dysregulation) on the
+#' scatter plots.
+#' @return the scatter plots.
 dysReg = function(dat, dat.imp, marker.proc.list, verbose = FALSE){
     m = nrow(dat); n = ncol(dat)
     num.omit.fit = round(.1*n)
@@ -168,26 +166,27 @@ dysReg = function(dat, dat.imp, marker.proc.list, verbose = FALSE){
     return(list(dat.dys, plot.list))
 }
 #' @title Analyze dysregulation significance
-#' @description Rank markers by the significance of deviation of the observed
-#' expressions from the (matched) imputed expressions based on the
+#' @description Rank-order markers by the significance of deviation of the
+#' observed expressions from the (matched) imputed expressions based on the
 #' Kolmogorov-Smirnov (KS) test.
-#' @param dat an object of log2-normalized gene (or protein) expressions,
+#' @param dat an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
-#' @param dat.imp the imputed data that likely represents the expressions of
-#' the markers in the (matched) normal samples.
-#' @param marker.proc.list the rownames of the data to be processed/imputed.
+#' @param dat.imp the imputed data that putatively represents the expressions
+#' of the markers in the (matched) normal states.
+#' @param marker.proc.list character array, the rownames of the data to be
+#' processed for dysregulation significance.
 #' @param pval.insig p-value threshold to determine spurious (null)
 #' dysregulation events.
-#' @return dat.imp.test, p-values of the markers significance computed by the
-#' KS test.
-#' @return dat.imp.test.sig, ranked p-values (KS test) of the significant
-#' markers that are lower than pval.insig.
-#' @return markers.imp.sig, ranked significantly dysregulated markers with
-#' p-values lower than pval.insig.
-#' @return dat.imp.test.insig, ranked p-values (KS test) of the insignificant
-#' markers that are greater than pval.insig.
-#' @return markers.imp.insig, ranked markers exhibiting spurious (null)
-#' dysregulation events with p-values greater than pval.insig.
+#' @return each marker's p-value of the statistical significance between its
+#' observed vs imputed values computed by the KS test.
+#' @return ranked p-values (KS test) of the significant markers, which are
+#' lower than pval.insig.
+#' @return ranked significantly dysregulated markers with p-values lower than
+#' pval.insig.
+#' @return ranked p-values (KS test) of the insignificant markers, which are
+#' greater than pval.insig.
+#' @return ranked insignificantly dysregulated markers (spurious
+#' dysregulations) with p-values greater than pval.insig.
 statTest = function(dat, dat.imp, marker.proc.list, pval.insig = 2E-1) {
     m = nrow(dat); n = ncol(dat)
     # Detect weird markers O8: Kolmogorov-Smirnov test, compare empirical CDFs
@@ -217,15 +216,16 @@ statTest = function(dat, dat.imp, marker.proc.list, pval.insig = 2E-1) {
 }
 #' @title Display outlying expressions
 #' @description Mark outlying expressions on the scatter plot of a given marker
-#' @param marker.proc.list the given markers to be processed.
-#' @param dat an object of log2-normalized gene (or protein) expressions,
+#' @param marker.proc.list character array, the rownames of the data to be
+#' processed for outlier analyses and for plotting.
+#' @param dat an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
-#' @param dat.imp the imputed data that likely represents the expressions of
-#' the markers in the (matched) normal samples.
-#' @param dat.imp.test p-values of the markers significance computed by the KS
-#' test.
+#' @param dat.imp the imputed data that putatively represents the expressions
+#' of the markers in the (matched) normal states.
+#' @param dat.imp.test marker's p-value of the statistical significance between
+#' its observed vs imputed values computed by the Kolmogorov-Smirnov test.
 #' @param dat.dys samples' distances to regression line (i.e., dysregulation)
-#' in the scatter plots.
+#' on the scatter plots.
 #' @param dys.sig.thr.upp the dysregulation score threshold to elucidate/mark
 #' significantly dysregulated outlier events.
 #' @param dataset the cohort name to be used in the output files.
@@ -235,8 +235,8 @@ statTest = function(dat, dat.imp, marker.proc.list, pval.insig = 2E-1) {
 #' marker.proc.list in a separate PDF file.
 #' @param draw.vi logical, to draw a violin plot for every marker in
 #' marker.proc.list in a separate PDF file.
-#' @return plot.list.marked, the scatter plots of the markers where the outlier
-#' dysregulation events are highlighted by red mark.
+#' @return the scatter plots of the markers where the outlier dysregulation
+#' events are highlighted by red mark.
 markOut = function(marker.proc.list, dat, dat.imp, dat.imp.test, dat.dys,
     dys.sig.thr.upp, dataset, num.omit.fit = NULL, draw.sc = TRUE,
     draw.vi = TRUE){
@@ -289,12 +289,13 @@ markOut = function(marker.proc.list, dat, dat.imp, dat.imp.test, dat.dys,
 #' @description Ranks markers in the order of decreasing percentage of outlying
 #' events.
 #' @param dat.dys samples' distances to regression line (i.e., dysregulation)
-#' in the scatter plots.
-#' @param marker.proc.list the given markers to be processed.
+#' on the scatter plots.
+#' @param marker.proc.list character array, the rownames of the data to be
+#' processed for outlier analyses.
 #' @param dys.sig.thr.upp the dysregulation score threshold to elucidate/mark
 #' significantly dysregulated outlier events.
-#' @return ranked markers are returned in marker.out.exp.per.sor.names with
-#' corresponding percentages in marker.out.exp.per.
+#' @return markers rank-ordered by the percentage of outliers over the samples.
+#' @return the percentages of outliers corresponding to ranked markers.
 rankPerOut = function(dat.dys, marker.proc.list, dys.sig.thr.upp){
     m = dim(dat.dys)[1]
     marker.out.exp.per = data.frame(percent.dysregulated=array(NA,dim=c(m,1)))
@@ -313,11 +314,11 @@ rankPerOut = function(dat.dys, marker.proc.list, dys.sig.thr.upp){
 #' @title Hierarchical cluster analysis
 #' @description Displays the hierarchically clustered data by the "pheatmap"
 #' package.
-#' The number of cluster along the markers/samples are estimated by a
+#' The numbers of clusters along the markers/samples are estimated by the
 #' multivariate metafeatures algorithm (https://github.com/weiyi-bitw/cafr).
-#' Optionally, they can be set by the user then cluster structures are
+#' Optionally, the numbers can be set by the user, then cluster structures are
 #' estimated by pair-wise analysis of the markers/samples.
-#' @param data an object of log2-normalized gene (or protein) expressions,
+#' @param data an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
 #' @param annotation_row data frame that specifies the annotations shown on
 #' left side of the heatmap. Each row defines the features for a specific
@@ -327,12 +328,12 @@ rankPerOut = function(dat.dys, marker.proc.list, dys.sig.thr.upp){
 #' @param annotation_col similar to annotation_row, but for columns.
 #' @param annotation_colors list for specifying annotation_row and
 #' annotation_col track colors manually. It is possible to define the colors
-#' for only some of the features. Check examples for details.
-#' @param main character string, an overall title for the plot
+#' for only some of the features.
+#' @param main character string, an overall title for the plot.
 #' @param stringency_col distinctiveness of the clusters (column) to be
-#' identified by the metafeatures algorithm (proportional to num. of clusters)
+#' identified by the metafeatures algorithm (proportional to num. of clusters).
 #' @param stringency_row distinctiveness of the clusters (row) to be
-#' identified by the metafeatures algorithm (proportional to num. of clusters)
+#' identified by the metafeatures algorithm (proportional to num. of clusters).
 #' @param clustering_distance_rows distance measure used in clustering rows.
 #' Possible values are "correlation" for Pearson correlation and all the
 #' distances supported by dist, such as "euclidean", etc. If the value is
@@ -344,17 +345,17 @@ rankPerOut = function(dat.dys, marker.proc.list, dys.sig.thr.upp){
 #' matrix), the contents of the matrix are shown instead of original values.
 #' @param num_clusters_row number of clusters the rows are divided into, based
 #' on the hierarchical clustering (using cutree), if rows are not clustered,
-#' the argument is ignored
-#' @param num_clusters_col similar to cutree_rows, but for columns
+#' the argument is ignored.
+#' @param num_clusters_col similar to num_clusters_row, but for columns.
 #' @param cluster_rows logical, determining if the rows should be clustered;
-#' or hclust object
-#' @param cluster_cols similar to cluster_rows, but for columns
+#' or a hclust object.
+#' @param cluster_cols similar to cluster_rows, but for columns.
 #' @param annotate_new_clusters_col logical, to annotate cluster IDs (column)
-#' that will be identified
-#' @param zero_white logical, to display 0 values as white in the colormap
-#' @return tree, the hierarchical tree structure; cluster_IDs_row, and
-#' cluster_IDs_col, the cluster identities of the markers and
-#' samples, respectively.
+#' that will be identified.
+#' @param zero_white logical, to display 0 values as white in the colormap.
+#' @return tree, the hierarchical tree structure.
+#' @return cluster_IDs_row, the (row) cluster identities of the markers.
+#' @return cluster_IDs_col, the (column) cluster identities of the samples.
 clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
     annotation_colors = NULL, main = NA,
     stringency_col = 6, stringency_row = 4,
@@ -420,40 +421,41 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
 #' @title Analyze protein / phosphosite expressions
 #' @description Find outlying markers and events across cancer types.
 #' @param data a list object where each element contains a proteomics data for
-#' a different cohort (markers in the rows, samples in the columns) or
-#' character string defining the path to such data (in .RDS format)
+#' a different cohort (markers in the rows, samples in the columns) or a
+#' character string defining the path to such data (in .RDS format).
 #' @param mad.norm logical, to normalize the proteomes to have a unit Median
-#' Absolute Deviation
-#' @param cohort.names character array
-#' @param panel, a character string describing marker panel, e.g., 'kinases'
-#' use 'global' to analyze all markers quantified across cohorts (default)
-#' use 'pancan' to analyze the markers commonly quantified across the cohorts
+#' Absolute Deviation.
+#' @param cohort.names character array.
+#' @param panel a character string describing marker panel, e.g., 'kinases'.
+#' Use 'global' to analyze all markers quantified across cohorts (default).
+#' Use 'pancan' to analyze the markers commonly quantified across the cohorts.
 #' @param panel.markers a character array containing the set of marker names
 #' that user wants to analyze, e.g., panel.markers = c("AAK1", "AATK", "ABL1",
-#' "ABL2", ...)
+#' "ABL2", ...).
 #' @param tol.nas a constant in [0,100], tolerance for the percentage of NAs
-#' in a marker, e.g., tol.nas = 20 will filter out markers containing 20% or
-#' more NAs
+#' in a marker, e.g., tol.nas = 20 will filter out markers containing 20\% or
+#' more NAs across samples.
 #' @param ku an integer in [1,num.markers], upper bound on the number of
-#' nearest neighbors of a marker
+#' nearest neighbors of a marker.
 #' @param miss.pstat a constant in [0,1], statistic to estimate potential
-#' outliers, 0.4 ~= q75+1.5*IQR
+#' outliers. See `artImpute()`.
 #' @param demo.panels logical, to draw demographics of the panel in each
-#' cancer cohort
+#' cohort.
 #' @param save.data logical, to save intermediate data (background inference
-#' and dysregulation measures)
+#' and dysregulation measures).
 #' @param draw.sc.plots logical, to draw each marker's qqplot of observed vs
-#' inferred (imputed) expressions
+#' inferred (imputed) expressions.
 #' @param draw.vi.plots logical, to draw each marker's violin plot of observed
-#' vs imputed expressions
+#' vs imputed expressions.
 #' @param draw.ou.plots logical, to draw each marker's outlier prevalence
-#' (by the percentage of outlying samples) across the cohorts
-#' @param verbose logical, to show progress of the algorithm
-#' @return pan.dat.dys, dysregulation scores of every marker per each sample;
-#' pan.dat.imp.test, the result of KS tests that evaluates the statistical
-#' significance of each marker's outlier samples;
-#' pan.marker.out.exp.per, a data list containing, for each cohort, the
-#' percentage of outlier samples for every marker
+#' (by the percentage of outlying samples) across the cohorts.
+#' @param verbose logical, to show progress of the algorithm.
+#' @return dysregulation scores of every marker for each sample.
+#' @return the result of Kolmogorov-Smirnov tests that evaluates the
+#' statistical significance of each marker's outlier samples.
+#' @return a data list containing, for each cohort, the percentage of outlier
+#' samples for every marker.
+#' @seealso [artImpute()] for how to set `miss.pstat` and `ku`
 oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     panel.markers = NULL, tol.nas = 20, ku = 6, miss.pstat = .4,
     demo.panels = FALSE, save.data = FALSE, draw.sc.plots = FALSE,
