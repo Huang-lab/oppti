@@ -7,13 +7,9 @@
 #
 cbindNA = function(X = list(seq_len(2),seq_len(3),seq_len(4))){
     n = 0
-    for (x in X){
-        n = max(n, length(x))
-    }
+    for (x in X) {n = max(n, length(x))}
     df = data.frame(matrix(NA, nrow = n, ncol = length(X)))
-    for (c in seq_len(length(X))){
-        df[seq_len(length(X[[c]])), c] = X[[c]]
-    }
+    for (c in seq_along(X)) {df[seq_along(X[[c]]), c] = X[[c]]}
     return(df)
 }
 # _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
