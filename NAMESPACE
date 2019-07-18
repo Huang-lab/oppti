@@ -3,7 +3,6 @@ export('artImpute',
     'dropMarkers', 
     'dysReg', 
     'markOut', 
-    'outScores', 
     'plotDen', 
     'rankPerOut', 
     'statTest', 
@@ -16,4 +15,9 @@ importFrom('RColorBrewer', 'brewer.pal')
 importFrom('pheatmap', 'pheatmap')
 importFrom('grDevices','pdf')
 importFrom('grDevices','dev.off')
-import('stats', 'ggplot2')
+importFrom('devtools','load_all')
+import('stats', 
+    'ggplot2', 
+    'knitr', 
+    'methods'
+    )

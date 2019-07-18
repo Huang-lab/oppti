@@ -1,7 +1,7 @@
 Package: oppti
 Type: Package
 Title: Outlier Protein and Phosphosite Target Identifier
-Version: 0.1.6
+Version: 0.1.5
 Date: 2019-07-03
 Author: Abdulkadir Elmas
 Maintainer: Abdulkadir Elmas <abdulkadir.elmas@mssm.edu>
@@ -9,7 +9,7 @@ Description: The aim of oppti is to analyze protein (and phosphosite) expression
 License: MIT
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 3.5)
+Depends: R (>= 3.6)
 Imports: 
     limma,
     stats,
@@ -17,8 +17,11 @@ Imports:
     ggplot2,
     grDevices,
     RColorBrewer,
-    pheatmap
-Suggests: knitr
+    pheatmap,
+    knitr,
+    methods,
+    devtools
+Suggests:
 VignetteBuilder: knitr
 URL: https://github.com/Huang-lab/oppti
 BugReports: https://github.com/Huang-lab/oppti/issues
