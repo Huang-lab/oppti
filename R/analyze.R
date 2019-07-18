@@ -92,8 +92,7 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
     rownames(dat.imp) = rownames(dat); colnames(dat.imp) = colnames(dat)
     if (!methods::is(dat, 'matrix')) {dat = as.matrix(dat)}
     if (is.null(marker.proc.list)){marker.proc.list = seq_len(nrow(dat))}
-    k = min(ku, nrow(dat))
-    dat.mis.ref = dat
+    k = min(ku, nrow(dat)); dat.mis.ref = dat
     # remove all outlying expressions to not skew imputation
     dat.mis.ref[out.pstats < miss.pstat] = NA
     dat.dis = as.matrix(dist(dat.mis.ref, method = 'euclidean', diag = TRUE,
@@ -241,11 +240,6 @@ markOut = function(marker.proc.list, dat, dat.imp, dat.imp.test, dat.dys,
     dys.sig.thr.upp, dataset, num.omit.fit = NULL, draw.sc = TRUE,
     draw.vi = TRUE){
     if(is.null(num.omit.fit)) {num.omit.fit = round(.1*ncol(dat))}
-    # To align the scatter plot margins in all markers, use:
-    # minl = min(min(dat.imp[marker.proc.list,], na.rm=TRUE),
-        # min(dat[marker.proc.list,], na.rm=TRUE))
-    # maxl = max(max(dat.imp[marker.proc.list,], na.rm=TRUE),
-        # max(dat[marker.proc.list,], na.rm=TRUE))
     plot.list.marked = list()
     for (marker in marker.proc.list) {
         marker.loc = which(rownames(dat)==marker)
@@ -255,21 +249,20 @@ markOut = function(marker.proc.list, dat, dat.imp, dat.imp.test, dat.dys,
         marker.out.samples = colnames(dat.dys)[marker.out.exp.loc]
         dat.dys[marker,marker.out.exp.loc]
         out = gqplot(y = dat[marker,], x = dat.imp[marker,], ci = .95,
-                    ylab = 'Observed', xlab = 'Imputed',
-                    highlight = marker.out.samples, omit.fit = num.omit.fit)
-                    #, minl = minl, maxl = maxl)
+            ylab = 'Observed', xlab = 'Imputed',
+            highlight = marker.out.samples, omit.fit = num.omit.fit)
+            #, minl = minl, maxl = maxl)
         d=out[[1]]; plot.it=out[[2]]
         plot.list.marked[[marker.loc]] = plot.it;
         # draw scatter plot
         if (draw.sc) {
-            pdf(paste(dataset,'.',marker,'.sc','.dysreg.pdf',sep=''),w=4,h=4)
-            print(plot.list.marked[[marker.loc]])
-            dev.off()
+            pdf(paste(dataset,'.',marker,'.sc','.dysreg.pdf',sep=''),width=4,
+            height=4); print(plot.list.marked[[marker.loc]]); dev.off()
         }
         # draw violin plot
         if (draw.vi) {
             df = data.frame(Observed = as.numeric(dat[marker,]),
-                            Imputed = as.numeric(dat.imp[marker,]))
+                Imputed = as.numeric(dat.imp[marker,]))
             df = reshape::melt(df); colnames(df) = c('data','marker')
             pl = ggplot2::ggplot(df, ggplot2::aes(x=data, y=marker)) +
                 ggplot2::geom_violin(trim = FALSE) +
@@ -278,7 +271,8 @@ markOut = function(marker.proc.list, dat, dat.imp, dat.imp.test, dat.dys,
                 ggplot2::ylab(marker) +
                 ggplot2::ggtitle(as.double(dat.imp.test[marker,]))
             # # ggplot2::ylim(minl,maxl)
-            pdf(paste(dataset,'.',marker,'.vi','.dysreg.pdf',sep=''),w=4,h=4)
+            pdf(paste(dataset,'.',marker,'.vi','.dysreg.pdf',sep=''),width=4,
+                height=4)
             print(pl)
             dev.off()
         }
@@ -364,19 +358,15 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
     annotate_new_clusters_col = FALSE, zero_white = FALSE){
     if (is.null(num_clusters_col)) {num_clusters_col = 1}
     if (is.null(num_clusters_row)) {num_clusters_row = 1}
-    if (zero_white) {
-        paletteLength = 100
+    if (zero_white) {paletteLength = 100
         my.color = grDevices::colorRampPalette(
             c("#006699", "white", "red"))(paletteLength)
         my.breaks = c(seq(min(data, na.rm = TRUE), 0,
             length.out = ceiling(paletteLength/2) + 1), seq(max(data,
             na.rm = TRUE)/paletteLength, max(data, na.rm = TRUE),
             length.out = floor(paletteLength/2)))
-    } else {
-        my.color = grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(
-            n = 7, name = "RdYlBu")))(100)
-        my.breaks = NA
-    }
+    } else {my.color=grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(
+            n = 7, name = "RdYlBu")))(100); my.breaks = NA}
     tree = pheatmap::pheatmap(data, annotation_col = annotation_col,
         annotation_colors = annotation_colors,
         display_numbers = display_numbers,
@@ -490,7 +480,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
             {x=sum(panel.markers %in% rownames(x))})
         pan.nas = lapply(data, function(x){x=100*rowSums(is.na(x))/ncol(x)})
         for (i in seq_len(pan.num))
-            {pdf(paste('',cohort.names[i],'.',panel,'.pdf',sep=''), w=6,h=4);
+            {pdf(paste('',cohort.names[i],'.',panel,'.pdf',sep=''), width=6,
+                height=4);
             graphics::hist(pan.nas[[i]][rownames(data[[i]]) %in% panel.markers]
             , xlab = '% NAs', ylab = 'Number of markers'
             , main = paste(cohort.names[i],' ', panel, ' > ', pan.det[[i]]
@@ -528,7 +519,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         {x=quantile(x, .95, na.rm = TRUE)})
     if (demo.panels) {
         colors = c('red','orange','yellow','green','blue','purple');
-        limx=1; limy=1; pdf('pan.null.dys.ecdf.pdf', w=6,h=6);
+        limx=1; limy=1; pdf('pan.null.dys.ecdf.pdf', width=6,height=6);
         graphics::plot(ecdf(pan.dat.imp.insig.all.dys[[1]]),
         col=colors[1], xlim=c(-limx,limx), ylim=c(1-limy,limy),
         main = 'Empirical CDF')
@@ -574,8 +565,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
             cluster_cols = FALSE, cluster_rows = FALSE,
             display_numbers = FALSE, main = '% of outliers')[[1]]
         pdf(paste('pan.cancer.',panel,'.markers.outlier.scores.pdf', sep = ''),
-            w = max(2,ceiling((ncol(tmp))**(.7)-1)),
-            h = max(2,ceiling((nrow(tmp))**(.7)-2)))
+            width = max(2,ceiling((ncol(tmp))**(.7)-1)),
+            height = max(2,ceiling((nrow(tmp))**(.7)-2)))
         print(pan.mar.ranked.out.exp.per.tree); dev.off()
         # Pan-cancer top-20 highly-outlying markers
         tmp = t(pan.mar.out.exp.per[pan.mar.out.exp.per.rat.sor$ix[
@@ -592,8 +583,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
             cluster_cols = FALSE, cluster_rows = FALSE, display_numbers = TRUE,
             main = '% of outliers')[[1]]
         pdf(paste('pan.cancer.',panel,'.top20.highly.outlying.markers.pdf',
-            sep = ''), w = max(2,ceiling((ncol(tmp))**(.7)-1)),
-            h = max(2,ceiling((nrow(tmp))**(.7)-2)))
+            sep = ''), width = max(2,ceiling((ncol(tmp))**(.7)-1)),
+            height = max(2,ceiling((nrow(tmp))**(.7)-2)))
         print(pan.mar.ranked20.t.out.exp.per.tree); dev.off()
         # Pan-cancer top-20 variably-highly-outlying markers
         if (pan.num>1) {
@@ -610,8 +601,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
                 display_numbers = TRUE, main = '% of outliers')[[1]]
             pdf(paste('pan.cancer.',panel,
                 '.top20.variably.outlying.markers.pdf', sep = ''),
-                w = max(2,ceiling((ncol(tmp))**(.7)-1)),
-                h = max(2,ceiling((nrow(tmp))**(.7)-2)))
+                width = max(2,ceiling((ncol(tmp))**(.7)-1)),
+                height = max(2,ceiling((nrow(tmp))**(.7)-2)))
             print(pan.mar.ranked20.t.sd.out.exp.per.tree); dev.off()
         }
     }
