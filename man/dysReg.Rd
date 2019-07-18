@@ -23,11 +23,6 @@ samples' distances to regression line (i.e., dysregulation) on the
 scatter plots.
 
 the scatter plots.
-dat = as.data.frame(matrix(1:(5*10),5,10))
-rownames(dat) = paste('marker',1:5,sep='')
-colnames(dat) = paste('sample',1:10,sep='')
-dat.imp = artImpute(dat, ku=2)
-result = dysReg(dat, dat.imp)
 }
 \description{
 For each marker processed, draws a scatter plot of matching
