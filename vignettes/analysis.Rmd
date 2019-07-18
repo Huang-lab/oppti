@@ -6,7 +6,7 @@ output: # pdf_document
 vignette: |
     %\VignetteIndexEntry{
     X. Outlier Protein and Phosphosite Target Identifier}
-    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEngine{knitr::render_markdown}
 ---
 
 ```{r setup, include=FALSE}
