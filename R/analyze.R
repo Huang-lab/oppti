@@ -71,6 +71,34 @@ plotDen = function(dat, name = '', per.plot = 8, main = NULL, group = NULL,
         dev.off()
     }
 }
+#' @title Analyze putative outliers
+#' @description Calculates a statistical measure of each data entry being a
+#' putative outlier
+#' @param dat an object of log2-normalized protein (or gene) expressions,
+#' containing markers in rows and samples in columns.
+#' @return outlier p-statistics
+#' @examples
+#' dat = as.data.frame(matrix(1:(5*10),5,10))
+#' rownames(dat) = paste('marker',1:5,sep='')
+#' colnames(dat) = paste('sample',1:10,sep='')
+#' result = outScores(dat)
+outScores = function(dat) {
+    n = ncol(dat)
+    dat.IQR = matrix(rep(apply(dat, 1, 'IQR', na.rm = TRUE), each = n),
+        ncol = n, byrow = TRUE)
+    dat.q75 = matrix(rep(apply(dat, 1, function(x){quantile(x, .75,
+        na.rm = TRUE)}), each = n), ncol = n, byrow = TRUE)
+    dat.q25 = matrix(rep(apply(dat, 1, function(x){quantile(x, .25,
+        na.rm = TRUE)}), each = n), ncol = n, byrow = TRUE)
+    dat.q75iqr.upp = (dat - dat.q75) / dat.IQR
+    dat.q75iqr.low = (dat.q25 - dat) / dat.IQR
+    # conflate over/under-expressed outliers
+    outlier.pstat.mat = pmax(dat.q75iqr.upp, dat.q75iqr.low) + 1
+    outlier.pstat.mat[is.na(outlier.pstat.mat)] = 1
+    outlier.pstat.mat[outlier.pstat.mat<1] = 1
+    outlier.pstat.mat = 1 / outlier.pstat.mat
+    return(outlier.pstat.mat)
+}
 #' @title Artificially miss and impute each data entry individually by ignoring
 #' outlying values
 #' @description Infers the normal-state expression of a marker based on its

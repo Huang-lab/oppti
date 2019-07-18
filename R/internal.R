@@ -31,35 +31,6 @@ cbindNA = function(X = list(seq_len(2),seq_len(3),seq_len(4))){
 }
 # _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
 #
-#   outScores
-#
-#   Calculates potential outlier scores (p-statistic) as a function of distance
-#     from 1st/3rd (box) quartiles.
-#   If the value lies within the box the score is 1, if it lies further away
-#     from the box the score gets closer to 0.
-#
-#   Returns, an object of the same class as dat containing the potential
-#     outlier scores.
-#
-outScores = function(dat) {
-    n = ncol(dat)
-    dat.IQR = matrix(rep(apply(dat, 1, 'IQR', na.rm = TRUE), each = n),
-        ncol = n, byrow = TRUE)
-    dat.q75 = matrix(rep(apply(dat, 1, function(x){quantile(x, .75,
-        na.rm = TRUE)}), each = n), ncol = n, byrow = TRUE)
-    dat.q25 = matrix(rep(apply(dat, 1, function(x){quantile(x, .25,
-        na.rm = TRUE)}), each = n), ncol = n, byrow = TRUE)
-    dat.q75iqr.upp = (dat - dat.q75) / dat.IQR
-    dat.q75iqr.low = (dat.q25 - dat) / dat.IQR
-    # conflate over/under-expressed outliers
-    outlier.pstat.mat = pmax(dat.q75iqr.upp, dat.q75iqr.low) + 1
-    outlier.pstat.mat[is.na(outlier.pstat.mat)] = 1
-    outlier.pstat.mat[outlier.pstat.mat<1] = 1
-    outlier.pstat.mat = 1 / outlier.pstat.mat
-    return(outlier.pstat.mat)
-}
-# _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
-#
 #   gqplot
 #
 #   Draws a scatter plot based on the grammar of graphics (ggplot2), then
