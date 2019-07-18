@@ -4,7 +4,7 @@
 \alias{statTest}
 \title{Analyze dysregulation significance}
 \usage{
-statTest(dat, dat.imp, marker.proc.list, pval.insig = 0.2)
+statTest(dat, dat.imp, marker.proc.list = NULL, pval.insig = 0.2)
 }
 \arguments{
 \item{dat}{an object of log2-normalized protein (or gene) expressions,
@@ -39,4 +39,13 @@ dysregulations) with p-values greater than pval.insig.
 Rank-order markers by the significance of deviation of the
 observed expressions from the (matched) imputed expressions based on the
 Kolmogorov-Smirnov (KS) test.
+}
+\examples{
+set.seed(1)
+dat = as.data.frame(matrix(runif(10*10),10,10))
+rownames(dat) = paste('marker',1:10,sep='')
+colnames(dat) = paste('sample',1:10,sep='')
+dat.imp = artImpute(dat, ku=6)
+result = statTest(dat, dat.imp) # the dysregulations on marker4 is
+# statistically significant with p-value 0.05244755.
 }

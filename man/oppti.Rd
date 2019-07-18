@@ -69,6 +69,13 @@ samples for every marker.
 \description{
 Find outlying markers and events across cancer types.
 }
+\examples{
+set.seed(1)
+dat = as.data.frame(matrix(runif(10*10),10,10))
+rownames(dat) = paste('marker',1:10,sep='')
+colnames(dat) = paste('sample',1:10,sep='')
+result = oppti(dat)
+}
 \seealso{
 [artImpute()] for how to set `miss.pstat` and `ku`
 }

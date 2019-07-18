@@ -4,7 +4,7 @@
 \alias{dysReg}
 \title{Analyze dysregulated (protruding) events}
 \usage{
-dysReg(dat, dat.imp, marker.proc.list, verbose = FALSE)
+dysReg(dat, dat.imp, marker.proc.list = NULL, verbose = FALSE)
 }
 \arguments{
 \item{dat}{an object of log2-normalized protein (or gene) expressions,
@@ -23,8 +23,20 @@ samples' distances to regression line (i.e., dysregulation) on the
 scatter plots.
 
 the scatter plots.
+dat = as.data.frame(matrix(1:(5*10),5,10))
+rownames(dat) = paste('marker',1:5,sep='')
+colnames(dat) = paste('sample',1:10,sep='')
+dat.imp = artImpute(dat, ku=2)
+result = dysReg(dat, dat.imp)
 }
 \description{
 For each marker processed, draws a scatter plot of matching
 values of observed vs imputed expressions.
+}
+\examples{
+dat = as.data.frame(matrix(1:(5*10),5,10))
+rownames(dat) = paste('marker',1:5,sep='')
+colnames(dat) = paste('sample',1:10,sep='')
+dat.imp = artImpute(dat, ku=2)
+result = dysReg(dat, dat.imp)
 }

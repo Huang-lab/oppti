@@ -4,7 +4,7 @@
 \alias{rankPerOut}
 \title{Rank markers by the percentage of outlying events}
 \usage{
-rankPerOut(dat.dys, marker.proc.list, dys.sig.thr.upp)
+rankPerOut(dat.dys, marker.proc.list = NULL, dys.sig.thr.upp)
 }
 \arguments{
 \item{dat.dys}{samples' distances to regression line (i.e., dysregulation)
@@ -24,4 +24,13 @@ the percentages of outliers corresponding to ranked markers.
 \description{
 Ranks markers in the order of decreasing percentage of outlying
 events.
+}
+\examples{
+set.seed(1)
+dat = as.data.frame(matrix(runif(10*10),10,10))
+rownames(dat) = paste('marker',1:10,sep='')
+colnames(dat) = paste('sample',1:10,sep='')
+dat.imp = artImpute(dat, ku=6)
+dat.dys = dysReg(dat, dat.imp)[[1]]
+result = rankPerOut(dat.dys, dys.sig.thr.upp = .25)
 }

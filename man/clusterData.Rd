@@ -77,3 +77,10 @@ package.
 The numbers of clusters along the markers/samples can be set by the user,
 then the cluster structures are estimated by pair-wise analysis.
 }
+\examples{
+set.seed(1)
+dat = as.data.frame(matrix(runif(10*10),10,10))
+rownames(dat) = paste('marker',1:10,sep='')
+colnames(dat) = paste('sample',1:10,sep='')
+result = clusterData(dat)
+}

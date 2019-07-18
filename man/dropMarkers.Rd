@@ -33,3 +33,10 @@ low-expression or low-variability.
 Filters out markers based on the percentage of missing values,
 low-expression and low-variability rates.
 }
+\examples{
+dat = as.data.frame(matrix(1:(5*10),5,10))
+rownames(dat) = paste('marker',1:5,sep='')
+colnames(dat) = paste('sample',1:10,sep='')
+dat[1,1:2] = NA # marker1 have 20\% missing values
+dropMarkers(dat, percent_NA = .2) # marker1 is filtered out
+}
