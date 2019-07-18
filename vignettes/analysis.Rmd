@@ -2,7 +2,7 @@
 title: "Outlier Protein and Phosphosite Target Identifier"
 output: # pdf_document
     md_document:
-        variant: gfm
+        variant: markdown_github
 vignette: |
     %\VignetteIndexEntry{
     X. Outlier Protein and Phosphosite Target Identifier}
