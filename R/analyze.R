@@ -14,6 +14,12 @@
 #' @return filtered data with the same format as the input data.
 #' @return the rownames (markers) of the data that are filtered out due to
 #' low-expression or low-variability.
+#' @examples
+#' dat = as.data.frame(matrix(1:(5*10),5,10))
+#' rownames(dat) = paste('marker',1:5,sep='')
+#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat[1,1:2] = NA # marker1 have 20% missing values
+#' dropMarkers(dat, percent_NA = .2) # marker1 is filtered out
 dropMarkers = function(dat, percent_NA = .2, low_mean_and_std = .05,
     q_low_var = .25, force_drop = NULL){
     if (!is.null(force_drop)) {dat = dat[!(rownames(dat) %in% force_drop),]}
@@ -48,6 +54,11 @@ dropMarkers = function(dat, percent_NA = .2, low_mean_and_std = .05,
 #' @param legend character string giving position to place legend. See `legend`
 #' for possible values. Can also be logical, with FALSE meaning no legend.
 #' @return pdf plot(s).
+#' @examples
+#' dat = as.data.frame(matrix(1:(5*10),5,10))
+#' rownames(dat) = paste('marker',1:5,sep='')
+#' colnames(dat) = paste('sample',1:10,sep='')
+#' plotDen(dat, name = 'myresults')
 plotDen = function(dat, name = '', per.plot = 8, main = NULL, group = NULL,
     legend = TRUE){
     if (is.null(per.plot)) {per.plot = ncol(dat)}
@@ -83,7 +94,10 @@ plotDen = function(dat, name = '', per.plot = 8, main = NULL, group = NULL,
 #' @return the imputed data that putatively represents the expressions of the
 #' markers in the (matched) normal states.
 #' @examples
-#' imputed = artImpute(dat = matrix(1:(5*10),5,10), ku = 2)
+#' dat = as.data.frame(matrix(1:(5*10),5,10))
+#' rownames(dat) = paste('marker',1:5,sep='')
+#' colnames(dat) = paste('sample',1:10,sep='')
+#' imputed = artImpute(dat, ku = 2)
 artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
     verbose = FALSE) {
     out.pstats = outScores(dat)
@@ -144,7 +158,14 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
 #' @return samples' distances to regression line (i.e., dysregulation) on the
 #' scatter plots.
 #' @return the scatter plots.
-dysReg = function(dat, dat.imp, marker.proc.list, verbose = FALSE){
+#' @examples
+#' dat = as.data.frame(matrix(1:(5*10),5,10))
+#' rownames(dat) = paste('marker',1:5,sep='')
+#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat.imp = artImpute(dat, ku=2)
+#' result = dysReg(dat, dat.imp)
+dysReg = function(dat, dat.imp, marker.proc.list = NULL, verbose = FALSE){
+    if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
     m = nrow(dat); n = ncol(dat)
     num.omit.fit = round(.1*n)
     dat.dys = data.frame(matrix(NA, m, n))
@@ -186,7 +207,16 @@ dysReg = function(dat, dat.imp, marker.proc.list, verbose = FALSE){
 #' greater than pval.insig.
 #' @return ranked insignificantly dysregulated markers (spurious
 #' dysregulations) with p-values greater than pval.insig.
-statTest = function(dat, dat.imp, marker.proc.list, pval.insig = 2E-1) {
+#' @examples
+#' set.seed(1)
+#' dat = as.data.frame(matrix(runif(10*10),10,10))
+#' rownames(dat) = paste('marker',1:10,sep='')
+#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat.imp = artImpute(dat, ku=6)
+#' result = statTest(dat, dat.imp) # the dysregulations on marker4 is
+#' # statistically significant with p-value 0.05244755.
+statTest = function(dat, dat.imp, marker.proc.list = NULL, pval.insig = 2E-1) {
+    if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
     m = nrow(dat); n = ncol(dat)
     # Detect weird markers O8: Kolmogorov-Smirnov test, compare empirical CDFs
         # of Observed vs Imputed
@@ -236,9 +266,19 @@ statTest = function(dat, dat.imp, marker.proc.list, pval.insig = 2E-1) {
 #' marker.proc.list in a separate PDF file.
 #' @return the scatter plots of the markers where the outlier dysregulation
 #' events are highlighted by red mark.
-markOut = function(marker.proc.list, dat, dat.imp, dat.imp.test, dat.dys,
-    dys.sig.thr.upp, dataset, num.omit.fit = NULL, draw.sc = TRUE,
-    draw.vi = TRUE){
+#' @examples
+#' set.seed(1)
+#' dat = as.data.frame(matrix(runif(10*10),10,10))
+#' rownames(dat) = paste('marker',1:10,sep='')
+#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat.imp = artImpute(dat, ku=6)
+#' dat.imp.test = statTest(dat, dat.imp)[[1]]
+#' dat.dys = dysReg(dat, dat.imp)[[1]]
+#' plots = markOut(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp = .25)
+markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
+    marker.proc.list = NULL, dataset = '', num.omit.fit = NULL,
+    draw.sc = TRUE, draw.vi = TRUE){
+    if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
     if(is.null(num.omit.fit)) {num.omit.fit = round(.1*ncol(dat))}
     plot.list.marked = list()
     for (marker in marker.proc.list) {
@@ -290,7 +330,16 @@ markOut = function(marker.proc.list, dat, dat.imp, dat.imp.test, dat.dys,
 #' significantly dysregulated outlier events.
 #' @return markers rank-ordered by the percentage of outliers over the samples.
 #' @return the percentages of outliers corresponding to ranked markers.
-rankPerOut = function(dat.dys, marker.proc.list, dys.sig.thr.upp){
+#' @examples
+#' set.seed(1)
+#' dat = as.data.frame(matrix(runif(10*10),10,10))
+#' rownames(dat) = paste('marker',1:10,sep='')
+#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat.imp = artImpute(dat, ku=6)
+#' dat.dys = dysReg(dat, dat.imp)[[1]]
+#' result = rankPerOut(dat.dys, dys.sig.thr.upp = .25)
+rankPerOut = function(dat.dys, marker.proc.list = NULL, dys.sig.thr.upp){
+    if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat.dys)}
     m = dim(dat.dys)[1]
     marker.out.exp.per = data.frame(percent.dysregulated=array(NA,dim=c(m,1)))
     rownames(marker.out.exp.per) = rownames(dat.dys)
@@ -348,6 +397,12 @@ rankPerOut = function(dat.dys, marker.proc.list, dys.sig.thr.upp){
 #' @return tree, the hierarchical tree structure.
 #' @return cluster_IDs_row, the (row) cluster identities of the markers.
 #' @return cluster_IDs_col, the (column) cluster identities of the samples.
+#' @examples
+#' set.seed(1)
+#' dat = as.data.frame(matrix(runif(10*10),10,10))
+#' rownames(dat) = paste('marker',1:10,sep='')
+#' colnames(dat) = paste('sample',1:10,sep='')
+#' result = clusterData(dat)
 clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
     annotation_colors = NULL, main = NA,
     stringency_col = 6, stringency_row = 4,
@@ -436,6 +491,12 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
 #' statistical significance of each marker's outlier samples.
 #' @return a data list containing, for each cohort, the percentage of outlier
 #' samples for every marker.
+#' @examples
+#' set.seed(1)
+#' dat = as.data.frame(matrix(runif(10*10),10,10))
+#' rownames(dat) = paste('marker',1:10,sep='')
+#' colnames(dat) = paste('sample',1:10,sep='')
+#' result = oppti(dat)
 #' @seealso [artImpute()] for how to set `miss.pstat` and `ku`
 oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     panel.markers = NULL, tol.nas = 20, ku = 6, miss.pstat = .4,
@@ -533,10 +594,9 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     # Mark outlying expressions of a given marker on its qqplot, draw
         # violin plots
     if (draw.sc.plots | draw.vi.plots) {for (i in seq_len(pan.num))
-        {markOut(marker.proc.list = pan.proc.markers[[i]], pan.dat[[i]],
-        pan.dat.imp[[i]], pan.dat.imp.test[[i]], pan.dat.dys[[i]],
-        pan.dys.sig.thr.upp[[i]], cohort.names[i], draw.sc = draw.sc.plots,
-        draw.vi = draw.vi.plots)}}
+        {markOut(pan.dat[[i]], pan.dat.imp[[i]], pan.dat.imp.test[[i]],
+        pan.dat.dys[[i]], pan.dys.sig.thr.upp[[i]], pan.proc.markers[[i]],
+        cohort.names[i], draw.sc = draw.sc.plots, draw.vi = draw.vi.plots)}}
     # Rank markers by the percentage of outlying events
     pan.marker.out.exp.per = tmp.lis; for (i in seq_len(pan.num))
         {pan.marker.out.exp.per[[i]] = rankPerOut(pan.dat.dys[[i]],
