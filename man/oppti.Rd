@@ -57,8 +57,8 @@ vs imputed expressions.}
 \value{
 dysregulation scores of every marker for each sample.
 
-the imputed data that putatively represents the expressions of the markers
-in the (matched) normal states.
+the imputed data that putatively represents the expressions of the
+markers in the (matched) normal states.
 
 the result of Kolmogorov-Smirnov tests that evaluates the
 statistical significance of each marker's outlier samples.

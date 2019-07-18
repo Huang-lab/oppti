@@ -74,8 +74,6 @@ cluster_IDs_col, the (column) cluster identities of the samples.
 \description{
 Displays the hierarchically clustered data by the "pheatmap"
 package.
-The numbers of clusters along the markers/samples are estimated by the
-multivariate metafeatures algorithm (https://github.com/weiyi-bitw/cafr).
-Optionally, the numbers can be set by the user, then cluster structures are
-estimated by pair-wise analysis of the markers/samples.
+The numbers of clusters along the markers/samples can be set by the user,
+then the cluster structures are estimated by pair-wise analysis.
 }
