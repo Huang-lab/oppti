@@ -1,4 +1,21 @@
 # _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
+#   .onAttach
+#
+#   Welcome message
+#
+.onAttach <- function (libname, pkgname){
+    welcome.message <- paste0(
+        "     __________________________     \n",
+        "    / __  / __  / __  /_  __/ /    \n",
+        "   / / / / /_/ / /_/ / / / / /    \n",
+        "  / /_/ / ____/ ____/ / / / /    \n",
+        " /_____/_/   /_/     /_/ /_/    v.",utils::packageVersion(
+            "oppti"),"\n",
+        "https://github.com/Huang-lab/\n"
+    )
+    packageStartupMessage(welcome.message)
+}
+# _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
 #
 #   cbindNA
 #

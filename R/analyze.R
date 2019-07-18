@@ -314,10 +314,8 @@ rankPerOut = function(dat.dys, marker.proc.list, dys.sig.thr.upp){
 #' @title Hierarchical cluster analysis
 #' @description Displays the hierarchically clustered data by the "pheatmap"
 #' package.
-#' The numbers of clusters along the markers/samples are estimated by the
-#' multivariate metafeatures algorithm (https://github.com/weiyi-bitw/cafr).
-#' Optionally, the numbers can be set by the user, then cluster structures are
-#' estimated by pair-wise analysis of the markers/samples.
+#' The numbers of clusters along the markers/samples can be set by the user,
+#' then the cluster structures are estimated by pair-wise analysis.
 #' @param data an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
 #' @param annotation_row data frame that specifies the annotations shown on
@@ -364,14 +362,6 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
     display_numbers = FALSE, num_clusters_row = NULL, num_clusters_col = NULL,
     cluster_rows = TRUE, cluster_cols = TRUE,
     annotate_new_clusters_col = FALSE, zero_white = FALSE){
-    if (!is.null(num_clusters_col) | !cluster_cols) {att_col = NULL}
-    if (!is.null(num_clusters_row) | !cluster_rows) {att_row = NULL}
-    if (is.null(num_clusters_col) & cluster_cols)
-        {att_col = cafr::attractorScanning(as.matrix(t(data)), maxIter = 1E2,
-        epsilon = 1E-14, a = stringency_col); num_clusters_col=dim(att_col)[1]}
-    if (is.null(num_clusters_row) & cluster_rows)
-        {att_row = cafr::attractorScanning(as.matrix(data), maxIter = 1E2,
-        epsilon = 1E-14, a = stringency_row); num_clusters_row=dim(att_row)[1]}
     if (is.null(num_clusters_col)) {num_clusters_col = 1}
     if (is.null(num_clusters_row)) {num_clusters_row = 1}
     if (zero_white) {
@@ -387,7 +377,6 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
             n = 7, name = "RdYlBu")))(100)
         my.breaks = NA
     }
-
     tree = pheatmap::pheatmap(data, annotation_col = annotation_col,
         annotation_colors = annotation_colors,
         display_numbers = display_numbers,
@@ -416,7 +405,7 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
             cutree_rows = num_clusters_row, show_rownames = TRUE,
             main = main, color = my.color, breaks = my.breaks)
     }
-    return(list(tree, cluster_IDs_row, cluster_IDs_col)) #, att_row, att_col
+    return(list(tree, cluster_IDs_row, cluster_IDs_col))
 }
 #' @title Analyze protein / phosphosite expressions
 #' @description Find outlying markers and events across cancer types.
