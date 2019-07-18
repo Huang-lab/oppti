@@ -1,7 +1,7 @@
 ---
 title: "Outlier Protein and Phosphosite Target Identifier"
-output: pdf_document
-    # md_document:
+output: # pdf_document
+    md_document
        # variant: markdown_github
 vignette: |
     %\VignetteIndexEntry{
