@@ -6,7 +6,8 @@ export('artImpute',
     'plotDen', 
     'rankPerOut', 
     'statTest', 
-    'oppti'
+    'oppti',
+    'outScores'
     )
 importFrom('limma', 'plotDensities')
 importFrom('reshape', 'melt')
