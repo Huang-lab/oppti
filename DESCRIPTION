@@ -1,7 +1,7 @@
 Package: oppti
 Type: Package
 Title: Outlier Protein and Phosphosite Target Identifier
-Version: 0.1.2
+Version: 0.1.3
 Date: 2019-07-03
 Author: Abdulkadir Elmas
 Maintainer: Abdulkadir Elmas <abdulkadir.elmas@mssm.edu>
