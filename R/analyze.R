@@ -480,7 +480,7 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
     }
     return(list(tree, cluster_IDs_row, cluster_IDs_col))
 }
-#' @title Analyze protein / phosphosite expressions
+#' @title Outlier protein and phosphosite target identification
 #' @description Find outlying markers and events across cancer types.
 #' @param data a list object where each element contains a proteomics data for
 #' a different cohort (markers in the rows, samples in the columns) or a
