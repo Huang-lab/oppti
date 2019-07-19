@@ -4,9 +4,10 @@ output: # pdf_document
     md_document:
         variant: gfm
 vignette: |
-    %\VignetteIndexEntry{
-    X. Outlier Protein and Phosphosite Target Identifier}
+    %\VignetteIndexEntry{Outlier Protein and Phosphosite Target Identifier}
     %\VignetteEngine{knitr::knitr}
+    %\VignetteIndexEntry{oppti}
+    %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
