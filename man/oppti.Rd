@@ -2,7 +2,7 @@
 % Please edit documentation in R/analyze.R
 \name{oppti}
 \alias{oppti}
-\title{Analyze protein / phosphosite expressions}
+\title{Outlier protein and phosphosite target identification}
 \usage{
 oppti(data, mad.norm = FALSE, cohort.names = NULL, panel = "global",
 panel.markers = NULL, tol.nas = 20, ku = 6, miss.pstat = 0.4,
