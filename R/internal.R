@@ -5,13 +5,13 @@
 #
 .onAttach <- function (libname, pkgname){
     welcome.message <- paste0(
-        "     __________________________     \n",
-        "    / __  / __  / __  /_  __/ /    \n",
-        "   / / / / /_/ / /_/ / / / / /    \n",
-        "  / /_/ / ____/ ____/ / / / /    \n",
-        " /_____/_/   /_/     /_/ /_/    v.",utils::packageVersion(
+        "     _________________________________     \n",
+        "    /  __  /  __  /  __  /        /  /    \n",
+        "   /  / / /  /_/ /  /_/ /__   ___/  /    \n",
+        "  /  /_/ /  ____/  ____/  /  /  /  /    \n",
+        " /______/__/   /__/      /__/  /__/    v.",utils::packageVersion(
             "oppti"),"\n",
-        "https://github.com/Huang-lab/\n"
+        "https://github.com/Huang-lab/oppti\n"
     )
     packageStartupMessage(welcome.message)
 }
