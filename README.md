@@ -39,8 +39,8 @@ cohort1.outlier.scores = result[[1]]
 | marker9  |          \-0.21 |          \-0.48 |          \-0.80 |            0.02 |
 | marker10 |          \-0.36 |            0.74 |          \-0.36 |          \-0.55 |
 
-Example matrix of outlier scores, displayed for the first 10 proteins
-(rows) and the first 4 samples (columns)
+Example matrix of the outlier scores, displayed for the first 10
+proteins (rows) and the first 4 samples (columns)
 
 In this toy example, marker5 has a (somewhat) elevated outlier score in
 sample3, suggesting a protruding expression in the disease state of
@@ -51,6 +51,54 @@ protein expression is expected in the observed disease state compared to
 the normal state. The landscape of these aberrant expressions analyzed
 for a cohort of individuals may serve for the discovery of personalized
 actionable targets.
+
+The outlier scores correspond to deviations of the observed expressions
+from the estimated normal states. The estimated normals are given in the
+second element of the
+result:
+
+``` r
+cohort1.normal.states = result[[2]] 
+```
+
+|          | cohort1.sample1 | cohort1.sample2 | cohort1.sample3 | cohort1.sample4 |
+| -------- | --------------: | --------------: | --------------: | --------------: |
+| marker1  |            0.16 |            0.89 |            0.59 |            0.56 |
+| marker2  |            0.50 |            0.61 |            0.85 |            0.94 |
+| marker3  |            0.85 |            0.52 |            0.77 |            1.11 |
+| marker4  |            0.70 |            0.83 |            1.43 |            0.31 |
+| marker5  |            0.00 |            0.01 |            0.02 |            0.07 |
+| marker6  |            0.31 |            1.23 |            1.69 |            0.51 |
+| marker7  |            0.00 |            0.09 |            0.03 |            0.01 |
+| marker8  |            0.52 |            0.58 |            0.52 |            0.59 |
+| marker9  |            0.36 |            0.62 |            0.54 |            0.92 |
+| marker10 |            0.25 |            1.18 |            1.03 |            1.06 |
+
+Example matrix of the normal states
+
+You can evaluate markers by the odds of obtaining these deviations
+purely by chance. A Kolmogorov-Smirnov test is performed for each marker
+between its observed and estimated states, and the p-values are reported
+in the third element of the result:
+
+``` r
+cohort1.markers.tests = result[[3]] 
+```
+
+|          |      x |
+| -------- | -----: |
+| marker1  | 0.8080 |
+| marker2  | 0.0346 |
+| marker3  | 0.3929 |
+| marker4  | 0.3929 |
+| marker5  | 0.0000 |
+| marker6  | 0.1350 |
+| marker7  | 0.0000 |
+| marker8  | 0.0709 |
+| marker9  | 0.3929 |
+| marker10 | 0.9578 |
+
+Statistical significance of outlying markers
 
 # Analyze proteomics data of multiple cohorts
 
@@ -125,10 +173,10 @@ cohort2.outlier.scores = outlier.scores[[2]]
 
 Example outlier scores in cohort2
 
-One can analyze the markers in terms of outlying events they exhibit
+You can evalueate the markers in terms of outlying events they exhibit
 across the cohort by using the `draw.sc.plots` flag. The outlier samples
 will be marked on a scatter plot of the disease (observed) vs normal
-(imputed) expressions. You can always set `panel.markers` parameter to
+(estimated) expressions. You can always set `panel.markers` parameter to
 restrict your analysis to a specific set of
 markers.
 
