@@ -45,12 +45,12 @@ proteins (rows) and the first 4 samples (columns)
 In this toy example, marker5 has a (somewhat) elevated outlier score in
 sample3, suggesting a protruding expression in the disease state of 
 sample3 relative to a normal state (i.e., the consensus co-expression 
-network inferred for marker5). Note that a, in contrast, negative sign in
-the outlier score indicates a negative dysregulation event, i.e., 
-relatively "lower" protein expression is expected in the observed disease 
-state compared to the normal state. The landscape of these aberrant 
-expressions analyzed for a cohort of individuals may serve for the 
-discovery of personalized actionable targets.
+network inferred for marker5). In contrast, a negative sign in the outlier
+score indicates a negative dysregulation event, i.e., relatively "lower" 
+protein expression is expected in the observed disease state compared to
+the normal state. The landscape of these aberrant expressions analyzed for
+a cohort of individuals may serve for the discovery of personalized 
+actionable targets.
 
 The outlier scores correspond to deviations of the observed expressions
 from the estimated normal states. The estimated normals are given in the
