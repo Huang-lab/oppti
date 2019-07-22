@@ -45,7 +45,7 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
     # marker name
     if (is.null(marker.name)) {marker.name = rownames(y)}
     if (is.null(marker.name)) {marker.name = rownames(x)}
-    # align dimentions
+    # align dimensions
     if (nrow(as.matrix(y)) < ncol(as.matrix(y))) {y = t(y)}
     if (nrow(as.matrix(x)) < ncol(as.matrix(x))) {x = t(x)}
     # drop NA values
