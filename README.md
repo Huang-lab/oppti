@@ -151,8 +151,7 @@ cohort1.outlier.scores = outlier.scores[[1]]
 
 Example outlier scores in cohort1
 
-Similarly, for the second cohort the outlier scores are obtained
-by:
+Similarly, for the second cohort the outlier scores are obtained by:
 
 ``` r
 cohort2.outlier.scores = outlier.scores[[2]]
@@ -176,9 +175,8 @@ Example outlier scores in cohort2
 You can evaluate the markers in terms of outlying events they exhibit
 across the cohort by using the `draw.sc.plots` flag. The outlier samples
 will be marked on a scatter plot of the disease (observed) vs normal
-(estimated) expressions. You can always set `panel.markers` parameter to
-restrict your analysis to a specific set of
-markers.
+(estimated) expressions. Note that, you can always set `panel.markers` 
+parameter to restrict your analysis to a specific set of markers.
 
 ``` r
 result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.sc.plots = TRUE,
@@ -186,8 +184,7 @@ result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.sc.plots = TRUE,
 ```
 
 To display the summary results of the markers’ outlying events across
-cohorts you can use
-`draw.ou.plots`:
+cohorts you can use `draw.ou.plots`:
 
 ``` r
 result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.ou.plots = TRUE,
