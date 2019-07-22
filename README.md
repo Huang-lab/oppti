@@ -173,7 +173,7 @@ cohort2.outlier.scores = outlier.scores[[2]]
 
 Example outlier scores in cohort2
 
-You can evalueate the markers in terms of outlying events they exhibit
+You can evaluate the markers in terms of outlying events they exhibit
 across the cohort by using the `draw.sc.plots` flag. The outlier samples
 will be marked on a scatter plot of the disease (observed) vs normal
 (estimated) expressions. You can always set `panel.markers` parameter to
@@ -185,7 +185,7 @@ result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.sc.plots = TRUE,
     panel.markers = rownames(cohort1.proteomes)[46:55])
 ```
 
-To dislay the summary results of the markers’ outlying events across
+To display the summary results of the markers’ outlying events across
 cohorts you can use
 `draw.ou.plots`:
 
