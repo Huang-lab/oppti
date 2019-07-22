@@ -174,8 +174,8 @@ Example outlier scores in cohort2
 
 You can evaluate the markers in terms of outlying events they exhibit
 across the cohort by using the `draw.sc.plots` flag. The outlier samples
-will be marked on a scatter plot of the disease (observed) vs normal
-(estimated) expressions. Note that, you can always set `panel.markers` 
+will be marked on a scatter plot displaying disease (observed) vs normal
+(estimated) expressions. Note that you can always set `panel.markers` 
 parameter to restrict your analysis to a specific set of markers.
 
 ``` r
