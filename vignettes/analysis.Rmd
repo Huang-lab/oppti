@@ -35,14 +35,14 @@ library(oppti)
 result = oppti(cohort1.proteomes)
 ```
 
-The outlier scores of each marker in each sample are then returned in the first
-element of the result:
+The outlier scores of each marker in each sample are then returned in the 
+first element of the result:
 ```{r, eval = TRUE} 
 cohort1.outlier.scores = result[[1]] 
 ```
 ```{r, eval = TRUE, echo = FALSE, size = 8}
 knitr::kable(cohort1.outlier.scores[1:10,1:4], digits = 2, 
-    caption = "Example matrix of outlier scores, displayed for the
+    caption = "Example matrix of the outlier scores, displayed for the
     first 10 proteins (rows) and the first 4 samples (columns)",
     row.names = TRUE)
 ```
@@ -55,6 +55,31 @@ negative dysregulation event, i.e., relatively "lower" protein expression is
 expected in the observed disease state compared to the normal state. The
 landscape of these aberrant expressions analyzed for a cohort of individuals
 may serve for the discovery of personalized actionable targets.
+
+The outlier scores correspond to deviations of the observed expressions from 
+the estimated normal states. The estimated normals are given in the second 
+element of the result:
+```{r, eval = TRUE} 
+cohort1.normal.states = result[[2]] 
+```
+```{r, eval = TRUE, echo = FALSE, size = 8}
+knitr::kable(cohort1.normal.states[1:10,1:4], digits = 2, 
+    caption = "Example matrix of the normal states",
+    row.names = TRUE)
+```
+
+You can evaluate markers by the odds of obtaining these deviations purely by 
+chance. A Kolmogorov-Smirnov test is performed for each marker between its 
+observed and estimated states, and the p-values are reported in the third 
+element of the result:
+```{r, eval = TRUE} 
+cohort1.markers.tests = result[[3]] 
+```
+```{r, eval = TRUE, echo = FALSE, size = 8}
+knitr::kable(cohort1.markers.tests[1:10,], digits = 4, 
+    caption = "Statistical significance of outlying markers",
+    row.names = TRUE)
+```
 
 # Analyze proteomics data of multiple cohorts
 For pan-cancer analyses, the normalized proteomics data from different cohorts
@@ -101,9 +126,9 @@ knitr::kable(cohort2.outlier.scores[1:10,1:4], digits = 2,
     row.names = TRUE)
 ```
 
-One can analyze the markers in terms of outlying events they exhibit across 
+You can evalueate the markers in terms of outlying events they exhibit across 
 the cohort by using the `draw.sc.plots` flag. The outlier samples will be 
-marked on a scatter plot of the disease (observed) vs normal (imputed) 
+marked on a scatter plot of the disease (observed) vs normal (estimated) 
 expressions. You can always set `panel.markers` parameter to restrict your 
 analysis to a specific set of markers.
 ```{r, eval = FALSE} 
