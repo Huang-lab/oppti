@@ -50,10 +50,10 @@ knitr::kable(cohort1.outlier.scores[1:10,1:4], digits = 2,
 In this toy example, marker5 has a (somewhat) elevated outlier score in
 sample3, suggesting a protruding expression in the disease state of sample3
 relative to a normal state (i.e., the consensus co-expression network inferred
-for marker5). Note that a negative sign in the outlier score indicates a
+for marker5). In contrast, a negative sign in the outlier score indicates a 
 negative dysregulation event, i.e., relatively "lower" protein expression is
-expected in the observed disease state compared to the normal state. The
-landscape of these aberrant expressions analyzed for a cohort of individuals
+expected in the observed disease state compared to the normal state. The 
+landscape of these aberrant expressions analyzed for a cohort of individuals 
 may serve for the discovery of personalized actionable targets.
 
 The outlier scores correspond to deviations of the observed expressions from 
@@ -126,19 +126,27 @@ knitr::kable(cohort2.outlier.scores[1:10,1:4], digits = 2,
     row.names = TRUE)
 ```
 
-You can evalueate the markers in terms of outlying events they exhibit across 
+You can evaluate the markers in terms of outlying events they exhibit across 
 the cohort by using the `draw.sc.plots` flag. The outlier samples will be 
-marked on a scatter plot of the disease (observed) vs normal (estimated) 
-expressions. You can always set `panel.markers` parameter to restrict your 
-analysis to a specific set of markers.
+marked on a scatter plot displaying disease (observed) vs normal (estimated) 
+expressions. Note that you can always set `panel.markers` parameter to restrict 
+your analysis to a specific set of markers.
 ```{r, eval = FALSE} 
 result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.sc.plots = TRUE,
     panel.markers = rownames(cohort1.proteomes)[46:55])
 ```
 
-To dislay the summary results of the markers' outlying events across cohorts 
+To display the summary results of the markers' outlying events across cohorts 
 you can use `draw.ou.plots`:
 ```{r, eval = FALSE} 
 result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.ou.plots = TRUE,
+    panel.markers = rownames(cohort1.proteomes)[46:55])
+```
+
+To narrow down the summary results to a number of markers 
+you can use `draw.ou.markers`:
+```{r, eval = FALSE} 
+result = oppti(list(cohort1.proteomes,cohort2.proteomes), 
+    draw.ou.markers = c('marker5', 'marker7'), 
     panel.markers = rownames(cohort1.proteomes)[46:55])
 ```
