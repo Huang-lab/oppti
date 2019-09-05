@@ -32,9 +32,9 @@ cohort1.outlier.scores = result[[1]]
 | marker2  |          \-0.14 |          \-0.31 |            0.32 |          \-0.08 |
 | marker3  |          \-0.10 |            0.16 |            0.55 |            0.65 |
 | marker4  |            0.77 |          \-0.60 |          \-0.68 |          \-0.18 |
-| marker5  |          \-0.30 |            0.02 |            1.62 |            1.01 |
+| marker5  |          \-0.25 |            0.06 |            1.67 |            0.95 |
 | marker6  |            0.06 |            0.39 |            0.77 |            0.55 |
-| marker7  |            0.01 |          \-0.05 |            0.00 |          \-0.06 |
+| marker7  |            0.04 |          \-0.32 |            0.00 |          \-0.39 |
 | marker8  |            0.17 |            0.30 |          \-0.01 |          \-0.02 |
 | marker9  |          \-0.21 |          \-0.48 |          \-0.80 |            0.02 |
 | marker10 |          \-0.36 |            0.74 |          \-0.36 |          \-0.55 |
@@ -43,14 +43,14 @@ Example matrix of the outlier scores, displayed for the first 10
 proteins (rows) and the first 4 samples (columns)
 
 In this toy example, marker5 has a (somewhat) elevated outlier score in
-sample3, suggesting a protruding expression in the disease state of 
-sample3 relative to a normal state (i.e., the consensus co-expression 
-network inferred for marker5). In contrast, a negative sign in the outlier
-score indicates a negative dysregulation event, i.e., relatively "lower" 
-protein expression is expected in the observed disease state compared to
-the normal state. The landscape of these aberrant expressions analyzed for
-a cohort of individuals may serve for the discovery of personalized 
-actionable targets.
+sample3, suggesting a protruding expression in the disease state of
+sample3 relative to a normal state (i.e., the consensus co-expression
+network inferred for marker5). In contrast, a negative sign in the
+outlier score indicates a negative dysregulation event, i.e., relatively
+“lower” protein expression is expected in the observed disease state
+compared to the normal state. The landscape of these aberrant
+expressions analyzed for a cohort of individuals may serve for the
+discovery of personalized actionable targets.
 
 The outlier scores correspond to deviations of the observed expressions
 from the estimated normal states. The estimated normals are given in the
@@ -67,9 +67,9 @@ cohort1.normal.states = result[[2]]
 | marker2  |            0.50 |            0.61 |            0.85 |            0.94 |
 | marker3  |            0.85 |            0.52 |            0.77 |            1.11 |
 | marker4  |            0.70 |            0.83 |            1.43 |            0.31 |
-| marker5  |            0.00 |            0.01 |            0.02 |            0.07 |
+| marker5  |            0.04 |            0.24 |            0.39 |            1.31 |
 | marker6  |            0.31 |            1.23 |            1.69 |            0.51 |
-| marker7  |            0.00 |            0.09 |            0.03 |            0.01 |
+| marker7  |            0.00 |            2.08 |            0.74 |            0.15 |
 | marker8  |            0.52 |            0.58 |            0.52 |            0.59 |
 | marker9  |            0.36 |            0.62 |            0.54 |            0.92 |
 | marker10 |            0.25 |            1.18 |            1.03 |            1.06 |
@@ -91,9 +91,9 @@ cohort1.markers.tests = result[[3]]
 | marker2  | 0.0346 |
 | marker3  | 0.3929 |
 | marker4  | 0.3929 |
-| marker5  | 0.0000 |
+| marker5  | 0.2391 |
 | marker6  | 0.1350 |
-| marker7  | 0.0000 |
+| marker7  | 0.9988 |
 | marker8  | 0.0709 |
 | marker9  | 0.3929 |
 | marker10 | 0.9578 |
@@ -142,16 +142,17 @@ cohort1.outlier.scores = outlier.scores[[1]]
 | marker2  |          \-0.14 |          \-0.31 |            0.32 |          \-0.08 |
 | marker3  |          \-0.10 |            0.16 |            0.55 |            0.65 |
 | marker4  |            0.77 |          \-0.60 |          \-0.68 |          \-0.18 |
-| marker5  |          \-0.30 |            0.02 |            1.62 |            1.01 |
+| marker5  |          \-0.25 |            0.06 |            1.67 |            0.95 |
 | marker6  |            0.06 |            0.39 |            0.77 |            0.55 |
-| marker7  |            0.01 |          \-0.05 |            0.00 |          \-0.06 |
+| marker7  |            0.04 |          \-0.32 |            0.00 |          \-0.39 |
 | marker8  |            0.17 |            0.30 |          \-0.01 |          \-0.02 |
 | marker9  |          \-0.21 |          \-0.48 |          \-0.80 |            0.02 |
 | marker10 |          \-0.36 |            0.74 |          \-0.36 |          \-0.55 |
 
 Example outlier scores in cohort1
 
-Similarly, for the second cohort the outlier scores are obtained by:
+Similarly, for the second cohort the outlier scores are obtained
+by:
 
 ``` r
 cohort2.outlier.scores = outlier.scores[[2]]
@@ -175,8 +176,9 @@ Example outlier scores in cohort2
 You can evaluate the markers in terms of outlying events they exhibit
 across the cohort by using the `draw.sc.plots` flag. The outlier samples
 will be marked on a scatter plot displaying disease (observed) vs normal
-(estimated) expressions. Note that you can always set `panel.markers` 
-parameter to restrict your analysis to a specific set of markers.
+(estimated) expressions. Note that you can always set `panel.markers`
+parameter to restrict your analysis to a specific set of
+markers.
 
 ``` r
 result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.sc.plots = TRUE,
@@ -184,9 +186,19 @@ result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.sc.plots = TRUE,
 ```
 
 To display the summary results of the markers’ outlying events across
-cohorts you can use `draw.ou.plots`:
+cohorts you can use
+`draw.ou.plots`:
 
 ``` r
 result = oppti(list(cohort1.proteomes,cohort2.proteomes), draw.ou.plots = TRUE,
+    panel.markers = rownames(cohort1.proteomes)[46:55])
+```
+
+To narrow down the summary results to a number of markers you can use
+`draw.ou.markers`:
+
+``` r
+result = oppti(list(cohort1.proteomes,cohort2.proteomes), 
+    draw.ou.markers = c('marker50', 'marker55'), 
     panel.markers = rownames(cohort1.proteomes)[46:55])
 ```
