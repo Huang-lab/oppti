@@ -147,6 +147,6 @@ To narrow down the summary results to a number of markers
 you can use `draw.ou.markers`:
 ```{r, eval = FALSE} 
 result = oppti(list(cohort1.proteomes,cohort2.proteomes), 
-    draw.ou.markers = c('marker5', 'marker7'), 
+    draw.ou.markers = c('marker50', 'marker55'), 
     panel.markers = rownames(cohort1.proteomes)[46:55])
 ```
