@@ -24,7 +24,7 @@ on the scatter plots.}
 \item{dys.sig.thr.upp}{the dysregulation score threshold to elucidate/mark
 significantly dysregulated outlier events.}
 
-\item{marker.proc.list}{character array, the rownames of the data to be
+\item{marker.proc.list}{character array, the row names of the data to be
 processed for outlier analyses and for plotting.}
 
 \item{dataset}{the cohort name to be used in the output files.}

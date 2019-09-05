@@ -10,7 +10,7 @@ rankPerOut(dat.dys, marker.proc.list = NULL, dys.sig.thr.upp)
 \item{dat.dys}{samples' distances to regression line (i.e., dysregulation)
 on the scatter plots.}
 
-\item{marker.proc.list}{character array, the rownames of the data to be
+\item{marker.proc.list}{character array, the row names of the data to be
 processed for outlier analyses.}
 
 \item{dys.sig.thr.upp}{the dysregulation score threshold to elucidate/mark

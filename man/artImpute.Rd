@@ -15,7 +15,7 @@ containing markers in rows and samples in columns.}
 \item{ku}{an integer in [1,num.markers], upper bound on the number of
 nearest neighbors of a marker.}
 
-\item{marker.proc.list}{character array, the rownames of the data to be
+\item{marker.proc.list}{character array, the row names of the data to be
 processed/imputed.}
 
 \item{miss.pstat}{the score threshold for ignoring potential outliers

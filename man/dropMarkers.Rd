@@ -26,7 +26,7 @@ specifically wants to filter out.}
 \value{
 filtered data with the same format as the input data.
 
-the rownames (markers) of the data that are filtered out due to
+the row names (markers) of the data that are filtered out due to
 low-expression or low-variability.
 }
 \description{

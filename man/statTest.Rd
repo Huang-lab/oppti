@@ -13,7 +13,7 @@ containing markers in rows and samples in columns.}
 \item{dat.imp}{the imputed data that putatively represents the expressions
 of the markers in the (matched) normal states.}
 
-\item{marker.proc.list}{character array, the rownames of the data to be
+\item{marker.proc.list}{character array, the row names of the data to be
 processed for dysregulation significance.}
 
 \item{pval.insig}{p-value threshold to determine spurious (null)

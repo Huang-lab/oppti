@@ -7,7 +7,8 @@
 oppti(data, mad.norm = FALSE, cohort.names = NULL, panel = "global",
 panel.markers = NULL, tol.nas = 20, ku = 6, miss.pstat = 0.4,
 demo.panels = FALSE, save.data = FALSE, draw.sc.plots = FALSE,
-draw.vi.plots = FALSE, draw.ou.plots = FALSE, verbose = FALSE)
+draw.vi.plots = FALSE, draw.sc.markers = NULL,
+draw.ou.plots = FALSE, draw.ou.markers = NULL, verbose = FALSE)
 }
 \arguments{
 \item{data}{a list object where each element contains a proteomics data for
@@ -49,8 +50,13 @@ inferred (imputed) expressions.}
 \item{draw.vi.plots}{logical, to draw each marker's violin plot of observed
 vs imputed expressions.}
 
+\item{draw.sc.markers}{character array, marker list to draw scatter plots}
+
 \item{draw.ou.plots}{logical, to draw each marker's outlier prevalence
 (by the percentage of outlying samples) across the cohorts.}
+
+\item{draw.ou.markers}{character array, marker list to draw pan-cancer
+outlier percentage plots}
 
 \item{verbose}{logical, to show progress of the algorithm.}
 }

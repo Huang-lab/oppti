@@ -10,14 +10,15 @@ stringency_row = 4, clustering_distance_rows = "euclidean",
 clustering_distance_cols = "euclidean", display_numbers = FALSE,
 num_clusters_row = NULL, num_clusters_col = NULL,
 cluster_rows = TRUE, cluster_cols = TRUE,
-annotate_new_clusters_col = FALSE, zero_white = FALSE)
+annotate_new_clusters_col = FALSE, zero_white = FALSE,
+color_palette = NULL)
 }
 \arguments{
 \item{data}{an object of log2-normalized protein (or gene) expressions,
 containing markers in rows and samples in columns.}
 
 \item{annotation_row}{data frame that specifies the annotations shown on
-left side of the heatmap. Each row defines the features for a specific
+left side of the heat map. Each row defines the features for a specific
 row. The rows in the data and in the annotation are matched using
 corresponding row names. Note that color schemes takes into account if
 variable is continuous or discrete.}
@@ -63,6 +64,8 @@ or a hclust object.}
 that will be identified.}
 
 \item{zero_white}{logical, to display 0 values as white in the colormap.}
+
+\item{color_palette}{vector of colors used in heatmap.}
 }
 \value{
 tree, the hierarchical tree structure.
