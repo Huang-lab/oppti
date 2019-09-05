@@ -24,11 +24,12 @@
 #
 cbindNA = function(X = list(seq_len(2),seq_len(3),seq_len(4))){
     n = 0
-    for (x in X) {n = max(n, length(x))}
+    for (x in X){n = max(n, length(as.matrix(x)))}
     df = data.frame(matrix(NA, nrow = n, ncol = length(X)))
-    for (c in seq_along(X)) {df[seq_along(X[[c]]), c] = X[[c]]}
+    for (c in seq_along(X)){df[seq_len(as.matrix(X[[c]])), c] = unlist(X[[c]])}
     return(df)
 }
+
 # _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
 #
 #   gqplot
@@ -41,10 +42,15 @@ cbindNA = function(X = list(seq_len(2),seq_len(3),seq_len(4))){
 gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
     d.thr = 0, na.action = 'omit', samp.names = NULL, marker.name = NULL,
     highlight = NULL, omit.fit = NULL, maxx = NULL, minx = NULL, maxy = NULL,
-    miny = NULL, align.xy = TRUE) {
+    miny = NULL, align.xy = TRUE, cohort.name = NULL) {
     # marker name
     if (is.null(marker.name)) {marker.name = rownames(y)}
     if (is.null(marker.name)) {marker.name = rownames(x)}
+    # cohort name
+    if (is.null(cohort.name)) {cohort.name =
+        strsplit(colnames(y)[1],'\\.')[[1]][1]}
+    if (is.null(cohort.name)) {cohort.name =
+        strsplit(colnames(x)[1],'\\.')[[1]][1]}
     # align dimensions
     if (nrow(as.matrix(y)) < ncol(as.matrix(y))) {y = t(y)}
     if (nrow(as.matrix(x)) < ncol(as.matrix(x))) {x = t(x)}
@@ -82,9 +88,6 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
         preds = matrix(NA, length(y), 3)
         preds[non.out,] = predict(fit, interval = 'confidence', level = ci)
     }
-    # y = slope x + intercept; ax + by + c = 0; by = -ax -c;
-    # d_x0_y0 = |ax0 + by0 + c| / sqrt(a^2 + b^2)
-    # b = 1; a = -slope; c = -intercept
     d = (y - fit$coefficients[2]*x - fit$coefficients[1]) /
         sqrt(fit$coefficients[2]**2+1)
     if (dist.sort) {
@@ -119,9 +122,9 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
                 slope = fit$coefficients[2], alpha = 0.5) +
             ggplot2::geom_line(ggplot2::aes(variable2, cupper), size = .1) +
             ggplot2::geom_line(ggplot2::aes(variable2, clower), size = .1) +
-            ggplot2::xlab(xlab) + ggplot2::ylab(ylab) +
+            ggplot2::xlab(xlab) + ggplot2::ylab(ylab) + theme_bw() +
             ggplot2::xlim(minx,maxx) + ggplot2::ylim(miny,maxy) +
-            ggplot2::ggtitle(marker.name)
+            ggplot2::ggtitle(paste(marker.name, 'in', cohort.name))
     } else {
         gg = ggplot2::ggplot(df, ggplot2::aes(x=variable2, y=variable1)) +
             ggplot2::geom_point(ggplot2::aes(variable2, variable1),
@@ -130,11 +133,11 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
                 slope = fit$coefficients[2], alpha = 0.5) +
             ggplot2::geom_line(ggplot2::aes(variable2, cupper), size = .1) +
             ggplot2::geom_line(ggplot2::aes(variable2, clower), size = .1) +
-            ggplot2::xlab(xlab) + ggplot2::ylab(ylab) +
+            ggplot2::xlab(xlab) + ggplot2::ylab(ylab) + theme_bw() +
             ggplot2::xlim(minx,maxx) + ggplot2::ylim(miny,maxy) +
-            ggplot2::ggtitle(marker.name) +
+            ggplot2::ggtitle(paste(marker.name, 'in', cohort.name)) +
             ggplot2::geom_point(data = df[highlight,],
-                ggplot2::aes(x=variable2, y=variable1), colour = 'red')
+                ggplot2::aes(x=variable2, y=variable1), colour = 'orange')
     }
     return(list(outlier.score, gg))
 }
@@ -157,7 +160,7 @@ madNorm = function(df, centering = FALSE, centering.zero.mad = FALSE){
     mads = apply(df,2,function(x)
         {median(abs(x-median(x,na.rm=TRUE)),na.rm=TRUE)})
     omit = mads==0
-    mads[omit] = 1 # omit scaling 0-MAD columns
+    mads[omit] = 1 #omit scaling 0-MAD columns
     df = df / matrix(rep(mads,each=dim(df)[1]),nrow=dim(df)[1],byrow=FALSE)
     if (centering) {
         cent = apply(df,2,'median',na.rm=TRUE)-

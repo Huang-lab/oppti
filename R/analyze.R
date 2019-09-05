@@ -12,7 +12,7 @@
 #' @param force_drop character array containing the marker names that user
 #' specifically wants to filter out.
 #' @return filtered data with the same format as the input data.
-#' @return the rownames (markers) of the data that are filtered out due to
+#' @return the row names (markers) of the data that are filtered out due to
 #' low-expression or low-variability.
 #' @examples
 #' dat = as.data.frame(matrix(1:(5*10),5,10))
@@ -23,7 +23,7 @@
 dropMarkers = function(dat, percent_NA = .2, low_mean_and_std = .05,
     q_low_var = .25, force_drop = NULL){
     if (!is.null(force_drop)) {dat = dat[!(rownames(dat) %in% force_drop),]}
-    dat = dat[rowSums(is.na(dat))/ncol(dat) < percent_NA,]
+    dat = dat[rowSums(is.na(dat))/ncol(dat) <= percent_NA,]
     if (is.null(low_mean_and_std)) {
         mean_dropped_markers = logical(nrow(dat))
     } else {
@@ -109,7 +109,7 @@ outScores = function(dat) {
 #' containing markers in rows and samples in columns.
 #' @param ku an integer in [1,num.markers], upper bound on the number of
 #' nearest neighbors of a marker.
-#' @param marker.proc.list character array, the rownames of the data to be
+#' @param marker.proc.list character array, the row names of the data to be
 #' processed/imputed.
 #' @param miss.pstat the score threshold for ignoring potential outliers
 #' during imputation. miss.pstat = 1 ignores values outside of the density box
@@ -130,7 +130,7 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
     verbose = FALSE) {
     out.pstats = outScores(dat)
     m = nrow(dat); n = ncol(dat)
-    dat.imp = data.frame(matrix(nrow = nrow(dat), ncol = ncol(dat)));
+    dat.imp = data.frame(matrix(nrow = nrow(dat), ncol = ncol(dat)))
     rownames(dat.imp) = rownames(dat); colnames(dat.imp) = colnames(dat)
     if (!methods::is(dat, 'matrix')) {dat = as.matrix(dat)}
     if (is.null(marker.proc.list)){marker.proc.list = seq_len(nrow(dat))}
@@ -148,10 +148,10 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
         # discard uncorrelated neighbors
         nei.ix = nei.ix[dat.cor[i,nei.ix]>.25]
         dat.knn = dat.mis.ref[nei.ix,]
-        # weighted average
+        # weighted average to impute missing data
         weights = (1/sorted$x[nei.ix])**2
         if (length(weights)==1) {
-            dat.imp[i,] = dat.knn * weights
+            dat.imp[i,] = dat.knn #** weights
         } else {
             for (j in seq_len(ncol(dat))) {
                 dat.imp[i,j] = stats::weighted.mean(dat.knn[
@@ -180,7 +180,7 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
 #' containing markers in rows and samples in columns.
 #' @param dat.imp the imputed data that putatively represents the expressions
 #' of the markers in the (matched) normal states.
-#' @param marker.proc.list character array, the rownames of the data to be
+#' @param marker.proc.list character array, the row names of the data to be
 #' processed for dysregulation.
 #' @param verbose logical, to show progress of the algorithm
 #' @return samples' distances to regression line (i.e., dysregulation) on the
@@ -221,7 +221,7 @@ dysReg = function(dat, dat.imp, marker.proc.list = NULL, verbose = FALSE){
 #' containing markers in rows and samples in columns.
 #' @param dat.imp the imputed data that putatively represents the expressions
 #' of the markers in the (matched) normal states.
-#' @param marker.proc.list character array, the rownames of the data to be
+#' @param marker.proc.list character array, the row names of the data to be
 #' processed for dysregulation significance.
 #' @param pval.insig p-value threshold to determine spurious (null)
 #' dysregulation events.
@@ -246,8 +246,6 @@ dysReg = function(dat, dat.imp, marker.proc.list = NULL, verbose = FALSE){
 statTest = function(dat, dat.imp, marker.proc.list = NULL, pval.insig = 2E-1) {
     if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
     m = nrow(dat); n = ncol(dat)
-    # Detect weird markers O8: Kolmogorov-Smirnov test, compare empirical CDFs
-        # of Observed vs Imputed
     dat.imp.test = matrix(NA,m,1); rownames(dat.imp.test) = rownames(dat)
     for (i in marker.proc.list) {dat.imp.test[i,] = stats::ks.test(t(dat[i,]),
         dat.imp[i,], alternative = 'two.sided')$p.value}
@@ -273,7 +271,7 @@ statTest = function(dat, dat.imp, marker.proc.list = NULL, pval.insig = 2E-1) {
 }
 #' @title Display outlying expressions
 #' @description Mark outlying expressions on the scatter plot of a given marker
-#' @param marker.proc.list character array, the rownames of the data to be
+#' @param marker.proc.list character array, the row names of the data to be
 #' processed for outlier analyses and for plotting.
 #' @param dat an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
@@ -307,7 +305,7 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
     marker.proc.list = NULL, dataset = '', num.omit.fit = NULL,
     draw.sc = TRUE, draw.vi = TRUE){
     if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
-    if(is.null(num.omit.fit)) {num.omit.fit = round(.1*ncol(dat))}
+    if (is.null(num.omit.fit)) {num.omit.fit = round(.1*ncol(dat))}
     plot.list.marked = list()
     for (marker in marker.proc.list) {
         marker.loc = which(rownames(dat)==marker)
@@ -324,8 +322,8 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
         plot.list.marked[[marker.loc]] = plot.it;
         # draw scatter plot
         if (draw.sc) {
-            pdf(paste(dataset,'.',marker,'.sc','.dysreg.pdf',sep=''),width=4,
-            height=4); print(plot.list.marked[[marker.loc]]); dev.off()
+            pdf(paste(dataset,'.',marker,'.sc','.dysreg.pdf',sep=''),width=3,
+            height=3); print(plot.list.marked[[marker.loc]]); dev.off()
         }
         # draw violin plot
         if (draw.vi) {
@@ -339,8 +337,8 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
                 ggplot2::ylab(marker) +
                 ggplot2::ggtitle(as.double(dat.imp.test[marker,]))
             # # ggplot2::ylim(minl,maxl)
-            pdf(paste(dataset,'.',marker,'.vi','.dysreg.pdf',sep=''),width=4,
-                height=4)
+            pdf(paste(dataset,'.',marker,'.vi','.dysreg.pdf',sep=''),width=3,
+                height=3)
             print(pl)
             dev.off()
         }
@@ -352,7 +350,7 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
 #' events.
 #' @param dat.dys samples' distances to regression line (i.e., dysregulation)
 #' on the scatter plots.
-#' @param marker.proc.list character array, the rownames of the data to be
+#' @param marker.proc.list character array, the row names of the data to be
 #' processed for outlier analyses.
 #' @param dys.sig.thr.upp the dysregulation score threshold to elucidate/mark
 #' significantly dysregulated outlier events.
@@ -390,7 +388,7 @@ rankPerOut = function(dat.dys, marker.proc.list = NULL, dys.sig.thr.upp){
 #' @param data an object of log2-normalized protein (or gene) expressions,
 #' containing markers in rows and samples in columns.
 #' @param annotation_row data frame that specifies the annotations shown on
-#' left side of the heatmap. Each row defines the features for a specific
+#' left side of the heat map. Each row defines the features for a specific
 #' row. The rows in the data and in the annotation are matched using
 #' corresponding row names. Note that color schemes takes into account if
 #' variable is continuous or discrete.
@@ -422,6 +420,7 @@ rankPerOut = function(dat.dys, marker.proc.list = NULL, dys.sig.thr.upp){
 #' @param annotate_new_clusters_col logical, to annotate cluster IDs (column)
 #' that will be identified.
 #' @param zero_white logical, to display 0 values as white in the colormap.
+#' @param color_palette vector of colors used in heatmap.
 #' @return tree, the hierarchical tree structure.
 #' @return cluster_IDs_row, the (row) cluster identities of the markers.
 #' @return cluster_IDs_col, the (column) cluster identities of the samples.
@@ -438,7 +437,8 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
     clustering_distance_cols = 'euclidean',
     display_numbers = FALSE, num_clusters_row = NULL, num_clusters_col = NULL,
     cluster_rows = TRUE, cluster_cols = TRUE,
-    annotate_new_clusters_col = FALSE, zero_white = FALSE){
+    annotate_new_clusters_col = FALSE, zero_white = FALSE,
+    color_palette = NULL){
     if (is.null(num_clusters_col)) {num_clusters_col = 1}
     if (is.null(num_clusters_row)) {num_clusters_row = 1}
     if (zero_white) {paletteLength = 100
@@ -448,8 +448,16 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
             length.out = ceiling(paletteLength/2) + 1), seq(max(data,
             na.rm = TRUE)/paletteLength, max(data, na.rm = TRUE),
             length.out = floor(paletteLength/2)))
-    } else {my.color=grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(
-            n = 7, name = "RdYlBu")))(100); my.breaks = NA}
+    } else {
+        if (is.null(color_palette)){
+            my.color=grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(
+                n = 7, name = "RdYlBu")))(100)
+        } else {
+            my.color=grDevices::colorRampPalette(RColorBrewer::brewer.pal(
+                n = 7, name = color_palette))(100)
+        }
+        my.breaks = NA
+    }
     tree = pheatmap::pheatmap(data, annotation_col = annotation_col,
         annotation_colors = annotation_colors,
         display_numbers = display_numbers,
@@ -509,8 +517,11 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
 #' inferred (imputed) expressions.
 #' @param draw.vi.plots logical, to draw each marker's violin plot of observed
 #' vs imputed expressions.
+#' @param draw.sc.markers character array, marker list to draw scatter plots
 #' @param draw.ou.plots logical, to draw each marker's outlier prevalence
 #' (by the percentage of outlying samples) across the cohorts.
+#' @param draw.ou.markers character array, marker list to draw pan-cancer
+#' outlier percentage plots
 #' @param verbose logical, to show progress of the algorithm.
 #' @return dysregulation scores of every marker for each sample.
 #' @return the imputed data that putatively represents the expressions of the
@@ -529,7 +540,11 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
 oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     panel.markers = NULL, tol.nas = 20, ku = 6, miss.pstat = .4,
     demo.panels = FALSE, save.data = FALSE, draw.sc.plots = FALSE,
-    draw.vi.plots = FALSE, draw.ou.plots = FALSE, verbose = FALSE) {
+    draw.vi.plots = FALSE, draw.sc.markers = NULL,
+    draw.ou.plots = FALSE, draw.ou.markers = NULL, verbose = FALSE) {
+    # fix flags: let draw.*.markers master draw.*.plots
+    if (!is.null(draw.sc.markers)) {draw.sc.plots = TRUE}
+    if (!is.null(draw.ou.markers)) {draw.ou.plots = TRUE}
     # Load data
     if (is.character(data)){tryCatch({data = readRDS(data)},
         warning=function(w){print(w)}, finally={})} else if (!is.list(data)){
@@ -546,7 +561,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     pan.dat = lapply(data, function(x){x=dropMarkers(x,
         percent_NA = tol.nas/100, low_mean_and_std = NULL,
         q_low_var = NULL)[[1]]})
-    # Choose samples (tumor or normal) for analyses
+    # Choose samples (tumor or normal) for analyses #***
     pan.dat = lapply(pan.dat, function(x){if (any(regexpr('Tumor',
         colnames(x))>0)){x=x[,regexpr('Tumor', colnames(x)) > 0]} else {x=x}})
     pan.mar = rownames(pan.dat[[1]]); if (pan.num>1) {for (i in 2:pan.num) {
@@ -620,17 +635,26 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         dev.off()
     }
     # Mark outlying expressions of a given marker on its qqplot, draw
-        # violin plots
-    if (draw.sc.plots | draw.vi.plots) {for (i in seq_len(pan.num))
-        {markOut(pan.dat[[i]], pan.dat.imp[[i]], pan.dat.imp.test[[i]],
-        pan.dat.dys[[i]], pan.dys.sig.thr.upp[[i]], pan.proc.markers[[i]],
-        cohort.names[i], draw.sc = draw.sc.plots, draw.vi = draw.vi.plots)}}
+    # violin plots
+    if (draw.sc.plots | draw.vi.plots) {for (i in seq_len(pan.num)){
+        if (is.null(draw.sc.markers)) {draw.sc.markers.i=pan.proc.markers[[i]]
+        } else {draw.sc.markers.i = draw.sc.markers[draw.sc.markers %in%
+            pan.proc.markers[[i]]]}
+        if (!is.null(draw.sc.markers.i)) {
+            # print(paste(c(pan.num[[i]], '|', draw.sc.markers.i),
+            # collapse = ' '))
+            markOut(pan.dat[[i]], pan.dat.imp[[i]], pan.dat.imp.test[[i]],
+                pan.dat.dys[[i]], pan.dys.sig.thr.upp[[i]], draw.sc.markers.i,
+                cohort.names[i],draw.sc=draw.sc.plots,draw.vi=draw.vi.plots)}}}
     # Rank markers by the percentage of outlying events
     pan.marker.out.exp.per = tmp.lis; for (i in seq_len(pan.num))
         {pan.marker.out.exp.per[[i]] = rankPerOut(pan.dat.dys[[i]],
         pan.proc.markers[[i]], pan.dys.sig.thr.upp[[i]])[[2]]}
     if (draw.ou.plots) {
         # Draw markers' percentages of outlying events for each cancer
+        if (is.null(draw.ou.markers)) {draw.ou.markers=panel.markers
+        } else {draw.ou.markers =
+            draw.ou.markers[draw.ou.markers %in% panel.markers]}
         pan.mar.out.exp.per =
             data.frame(matrix(NA,length(panel.markers),pan.num))
         colnames(pan.mar.out.exp.per) = cohort.names
@@ -638,6 +662,9 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         for (i in seq_len(pan.num))
             {pan.mar.out.exp.per[rownames(pan.marker.out.exp.per[[i]]),i] =
                 pan.marker.out.exp.per[[i]]}
+        # Display the predefined marker set
+        pan.mar.out.exp.per = pan.mar.out.exp.per[which(rownames(
+            pan.mar.out.exp.per) %in% draw.ou.markers),]
         # Pan-cancer highly-outlying markers
         pan.mar.out.exp.per.rat.sor = sort(rowSums(pan.mar.out.exp.per,
             na.rm = TRUE)/ncol(pan.mar.out.exp.per), decreasing = TRUE,
@@ -650,13 +677,12 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
                 pan.mar.out.exp.per.rat.sor$x>0]]
         colnames(tmp) = colnames(pan.mar.out.exp.per)
         pan.mar.ranked.out.exp.per.tree = clusterData(tmp,
-            cluster_cols = FALSE, cluster_rows = FALSE,
+            cluster_cols = FALSE, cluster_rows = FALSE, color_palette = 'Reds',
             display_numbers = FALSE, main = '% of outliers')[[1]]
         pdf(paste('pan.cancer.',panel,'.markers.outlier.scores.pdf', sep = ''),
             width = max(2,ceiling((ncol(tmp))**(.7)-1)),
             height = max(2,ceiling((nrow(tmp))**(.7)-2)))
         print(pan.mar.ranked.out.exp.per.tree); dev.off()
-        # Pan-cancer top-20 highly-outlying markers
         tmp = t(pan.mar.out.exp.per[pan.mar.out.exp.per.rat.sor$ix[
             pan.mar.out.exp.per.rat.sor$x>0][seq_len(min(20,length(
                 pan.mar.out.exp.per.rat.sor$ix[
@@ -667,9 +693,10 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
                     pan.mar.out.exp.per.rat.sor$ix[
                         pan.mar.out.exp.per.rat.sor$x>0])))]]
         rownames(tmp) = colnames(pan.mar.out.exp.per)
+        # Display the predefined marker set
         pan.mar.ranked20.t.out.exp.per.tree = clusterData(tmp,
             cluster_cols = FALSE, cluster_rows = FALSE, display_numbers = TRUE,
-            main = '% of outliers')[[1]]
+            main = '% of outliers', color_palette = 'Reds')[[1]]
         pdf(paste('pan.cancer.',panel,'.top20.highly.outlying.markers.pdf',
             sep = ''), width = max(2,ceiling((ncol(tmp))**(.7)-1)),
             height = max(2,ceiling((nrow(tmp))**(.7)-2)))
@@ -686,7 +713,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
                             pan.mar.out.exp.per.sd.sor$x)])))],])
             pan.mar.ranked20.t.sd.out.exp.per.tree = clusterData(tmp,
                 cluster_cols = FALSE, cluster_rows = FALSE,
-                display_numbers = TRUE, main = '% of outliers')[[1]]
+                display_numbers = TRUE, main = '% of outliers',
+                color_palette = 'Reds')[[1]]
             pdf(paste('pan.cancer.',panel,
                 '.top20.variably.outlying.markers.pdf', sep = ''),
                 width = max(2,ceiling((ncol(tmp))**(.7)-1)),
@@ -696,9 +724,9 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     }
     if (pan.num>1){
         return(list(pan.dat.dys, pan.dat.imp, pan.dat.imp.test,
-                    pan.marker.out.exp.per))
+                    pan.marker.out.exp.per, pan.dys.sig.thr.upp))
     } else {
         return(list(pan.dat.dys[[1]], pan.dat.imp[[1]], pan.dat.imp.test[[1]],
-                    pan.marker.out.exp.per[[1]]))
+                    pan.marker.out.exp.per[[1]], pan.dys.sig.thr.upp[[1]]))
     }
 }
