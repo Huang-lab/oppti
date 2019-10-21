@@ -16,7 +16,7 @@ knitr::opts_chunk$set(cache=FALSE)
 ```
 
 ```{r, echo = FALSE, hide=TRUE, message=FALSE, warning=FALSE}
-devtools::load_all(".")
+library('oppti')
 ```
 
 # Analyze proteomics data of a single cohort
@@ -85,8 +85,8 @@ knitr::kable(cohort1.markers.tests[1:10,], digits = 4,
 For pan-cancer analyses, the normalized proteomics data from different cohorts
 can be supplied to `oppti` in a list object. Lets generate another toy
 proteomics data for a separate cohort of 20 disease samples, each quantifying 
-80 proteins (say, 50 of which are overlapping with those quantified in the first
-cohort).
+80 proteins (say, 50 of which are overlapping with those quantified in the 
+first cohort).
 ```{r, eval = TRUE}
 cohort2.proteomes = as.data.frame(matrix(abs(rnorm(80*20)), 80, 20)) 
 rownames(cohort2.proteomes) = paste('marker', 51:130, sep = '')
