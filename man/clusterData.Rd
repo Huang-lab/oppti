@@ -50,7 +50,7 @@ columns. Possible values the same as for clustering_distance_rows.}
 printed to the cells. If this is a matrix (with same dimensions as original
 matrix), the contents of the matrix are shown instead of original values.}
 
-\item{number_format} {format strings (C printf style) of the numbers shown in
+\item{number_format}{format strings (C printf style) of the numbers shown in
 cells. For example "\%.2f" shows 2 decimal places and "\%.1e" shows
 exponential notation (see more in sprintf).}
 

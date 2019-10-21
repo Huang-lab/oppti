@@ -40,7 +40,9 @@ marker.proc.list in a separate PDF file.}
 marker.proc.list in a separate PDF file.}
 
 \item{conf.int}{confidence interval to display around the regression line}
+
 \item{ylab}{a title for the y axis}
+
 \item{xlab}{a title for the x axis}
 }
 \value{
