@@ -13,7 +13,7 @@
             "oppti"),"\n",
         "https://github.com/Huang-lab/oppti\n"
     )
-    packageStartupMessage(welcome.message)
+    if (runif(1)<0) {packageStartupMessage(welcome.message)}
 }
 # _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
 #
@@ -75,11 +75,11 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
     if (is.null(omit.fit)) {
         fit = stats::lm(y ~ x)
         preds = predict(stats::lm(y ~ x, na.action = na.exclude),
-                        interval = 'confidence', level = ci)
+            interval = 'confidence', level = ci)
     } else if (omit.fit < 1) {
         fit = stats::lm(y ~ x)
         preds = predict(stats::lm(y ~ x, na.action = na.exclude),
-                        interval = 'confidence', level = ci)
+            interval = 'confidence', level = ci)
     } else {
         y.s = sort(y, decreasing = TRUE, index.return = TRUE, na.last = TRUE)
         non.out = (y < y[y.s$ix[omit.fit]]) &
@@ -122,9 +122,11 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
                 slope = fit$coefficients[2], alpha = 0.5) +
             ggplot2::geom_line(ggplot2::aes(variable2, cupper), size = .1) +
             ggplot2::geom_line(ggplot2::aes(variable2, clower), size = .1) +
-            ggplot2::xlab(xlab) + ggplot2::ylab(ylab) + theme_bw() +
+            theme_bw() +
             ggplot2::xlim(minx,maxx) + ggplot2::ylim(miny,maxy) +
             ggplot2::ggtitle(paste(marker.name, 'in', cohort.name))
+        if (!is.na(xlab)) {gg = gg + ggplot2::xlab(xlab)}
+        if (!is.na(ylab)) {gg = gg + ggplot2::ylab(ylab)}
     } else {
         gg = ggplot2::ggplot(df, ggplot2::aes(x=variable2, y=variable1)) +
             ggplot2::geom_point(ggplot2::aes(variable2, variable1),
@@ -133,11 +135,13 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
                 slope = fit$coefficients[2], alpha = 0.5) +
             ggplot2::geom_line(ggplot2::aes(variable2, cupper), size = .1) +
             ggplot2::geom_line(ggplot2::aes(variable2, clower), size = .1) +
-            ggplot2::xlab(xlab) + ggplot2::ylab(ylab) + theme_bw() +
+            theme_bw() +
             ggplot2::xlim(minx,maxx) + ggplot2::ylim(miny,maxy) +
             ggplot2::ggtitle(paste(marker.name, 'in', cohort.name)) +
             ggplot2::geom_point(data = df[highlight,],
-                ggplot2::aes(x=variable2, y=variable1), colour = 'orange')
+            ggplot2::aes(x=variable2, y=variable1), colour = 'orange')
+        if (!is.na(xlab)) {gg = gg + ggplot2::xlab(xlab)}
+        if (!is.na(ylab)) {gg = gg + ggplot2::ylab(ylab)}
     }
     return(list(outlier.score, gg))
 }
@@ -148,12 +152,12 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
 #   Normalizes the columns of a data frame to have the unit Median Absolute
 #     Deviation (MAD), i.e., median(abs(df$i-median(df$i))) = 1, for every 'i'.
 #     Optionally, center the medians to the median of all column medians
-#     (centering = T).
+#     (centering = TRUE).
 #
 #   Special attention must be paid to columns with zero-MAD, i.e., no
 #     variation, static values. By default, they are omitted (unprocessed).
 #     Optionally, they can be centered to the median of all column medians
-#     (centering.zero.mad = T), however, they can not be scaled to have a
+#     (centering.zero.mad = TRUE), however, they can not be scaled to have a
 #     unit-MAD due to static values.
 #
 madNorm = function(df, centering = FALSE, centering.zero.mad = FALSE){
@@ -169,4 +173,33 @@ madNorm = function(df, centering = FALSE, centering.zero.mad = FALSE){
         df = df - matrix(rep(cent,each=dim(df)[1]),nrow=dim(df)[1],byrow=FALSE)
     }
     return(df)
+}
+
+# _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
+#
+#   uniq
+#
+#   Return unique elements (and indices) of an array
+#   Pick the last one from an array of repeated items
+#
+uniq = function(x, index.return = FALSE) {
+    l = length(x)
+    ix = vector()
+    for (i in seq_along(x)) {
+        if (!x[i] %in% x[(i+1):l]) {
+            ix = c(ix,i)
+        }
+    }
+    if (!x[l] %in% x[seq_len(l-1)]) {
+        ix = c(ix,l)
+    }
+    chc = x[!x %in% x[ix]]
+    if (length(chc)>0){
+        print(paste('Warning! Not sliced: ', unique(chc)))
+    }
+    if (index.return) {
+        return(list(x = x[ix], ix = ix))
+    } else {
+        return(x[ix])
+    }
 }

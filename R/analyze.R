@@ -15,9 +15,8 @@
 #' @return the row names (markers) of the data that are filtered out due to
 #' low-expression or low-variability.
 #' @examples
-#' dat = as.data.frame(matrix(1:(5*10),5,10))
-#' rownames(dat) = paste('marker',1:5,sep='')
-#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat = setNames(as.data.frame(matrix(1:(5*10),5,10),
+#' row.names = paste('marker',1:5,sep='')), paste('sample',1:10,sep=''))
 #' dat[1,1:2] = NA # marker1 have 20% missing values
 #' dropMarkers(dat, percent_NA = .2) # marker1 is filtered out
 dropMarkers = function(dat, percent_NA = .2, low_mean_and_std = .05,
@@ -55,9 +54,8 @@ dropMarkers = function(dat, percent_NA = .2, low_mean_and_std = .05,
 #' for possible values. Can also be logical, with FALSE meaning no legend.
 #' @return pdf plot(s).
 #' @examples
-#' dat = as.data.frame(matrix(1:(5*10),5,10))
-#' rownames(dat) = paste('marker',1:5,sep='')
-#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat = setNames(as.data.frame(matrix(1:(5*10),5,10),
+#' row.names = paste('marker',1:5,sep='')), paste('sample',1:10,sep=''))
 #' plotDen(dat, name = 'myresults')
 plotDen = function(dat, name = '', per.plot = 8, main = NULL, group = NULL,
     legend = TRUE){
@@ -78,9 +76,8 @@ plotDen = function(dat, name = '', per.plot = 8, main = NULL, group = NULL,
 #' containing markers in rows and samples in columns.
 #' @return outlier p-statistics
 #' @examples
-#' dat = as.data.frame(matrix(1:(5*10),5,10))
-#' rownames(dat) = paste('marker',1:5,sep='')
-#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat = setNames(as.data.frame(matrix(1:(5*10),5,10),
+#' row.names = paste('marker',1:5,sep='')), paste('sample',1:10,sep=''))
 #' result = outScores(dat)
 outScores = function(dat) {
     n = ncol(dat)
@@ -122,9 +119,8 @@ outScores = function(dat) {
 #' @return the imputed data that putatively represents the expressions of the
 #' markers in the (matched) normal states.
 #' @examples
-#' dat = as.data.frame(matrix(1:(5*10),5,10))
-#' rownames(dat) = paste('marker',1:5,sep='')
-#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat = setNames(as.data.frame(matrix(1:(5*10),5,10),
+#' row.names = paste('marker',1:5,sep='')), paste('sample',1:10,sep=''))
 #' imputed = artImpute(dat, ku = 2)
 artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
     verbose = FALSE) {
@@ -166,7 +162,7 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
         if (verbose){
             if (i %in% round(seq(round(length(marker.proc.list)/100),
                 length(marker.proc.list), length = 100))){
-                print(paste('Background inference: ',
+                message(paste('Background inference: ',
                 round(100*i/length(marker.proc.list)),'% done.'))
             }
         }
@@ -187,9 +183,8 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
 #' scatter plots.
 #' @return the scatter plots.
 #' @examples
-#' dat = as.data.frame(matrix(1:(5*10),5,10))
-#' rownames(dat) = paste('marker',1:5,sep='')
-#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat = setNames(as.data.frame(matrix(1:(5*10),5,10),
+#' row.names = paste('marker',1:5,sep='')), paste('sample',1:10,sep=''))
 #' dat.imp = artImpute(dat, ku=2)
 #' result = dysReg(dat, dat.imp)
 dysReg = function(dat, dat.imp, marker.proc.list = NULL, verbose = FALSE){
@@ -207,7 +202,7 @@ dysReg = function(dat, dat.imp, marker.proc.list = NULL, verbose = FALSE){
         dat.dys[i, as.character(d$sampleID)] = d$dist2reg
         if (verbose){
             if (i %in% round(seq(round(m/100), m, length = 100))){
-            print(paste('Dysregulation analysis:', round(100*i/m),'% done.'))
+            message(paste('Dysregulation analysis:', round(100*i/m),'% done.'))
             }
         }
     }
@@ -237,9 +232,8 @@ dysReg = function(dat, dat.imp, marker.proc.list = NULL, verbose = FALSE){
 #' dysregulations) with p-values greater than pval.insig.
 #' @examples
 #' set.seed(1)
-#' dat = as.data.frame(matrix(runif(10*10),10,10))
-#' rownames(dat) = paste('marker',1:10,sep='')
-#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat = setNames(as.data.frame(matrix(runif(10*10),10,10),
+#' row.names = paste('marker',1:10,sep='')), paste('sample',1:10,sep=''))
 #' dat.imp = artImpute(dat, ku=6)
 #' result = statTest(dat, dat.imp) # the dysregulations on marker4 is
 #' # statistically significant with p-value 0.05244755.
@@ -267,7 +261,7 @@ statTest = function(dat, dat.imp, marker.proc.list = NULL, pval.insig = 2E-1) {
     dat.imp.test.sig = data.frame(pval = dat.imp.test[markers.imp.sig,])
     dat.imp.test.insig = data.frame(pval = dat.imp.test[markers.imp.insig,])
     return(list(dat.imp.test, dat.imp.test.sig, markers.imp.sig,
-                dat.imp.test.insig, markers.imp.insig))
+        dat.imp.test.insig, markers.imp.insig))
 }
 #' @title Display outlying expressions
 #' @description Mark outlying expressions on the scatter plot of a given marker
@@ -294,16 +288,16 @@ statTest = function(dat, dat.imp, marker.proc.list = NULL, pval.insig = 2E-1) {
 #' events are highlighted by red mark.
 #' @examples
 #' set.seed(1)
-#' dat = as.data.frame(matrix(runif(10*10),10,10))
-#' rownames(dat) = paste('marker',1:10,sep='')
-#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat = setNames(as.data.frame(matrix(runif(10*10),10,10),
+#' row.names = paste('marker',1:10,sep='')), paste('sample',1:10,sep=''))
 #' dat.imp = artImpute(dat, ku=6)
 #' dat.imp.test = statTest(dat, dat.imp)[[1]]
 #' dat.dys = dysReg(dat, dat.imp)[[1]]
 #' plots = markOut(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp = .25)
 markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
     marker.proc.list = NULL, dataset = '', num.omit.fit = NULL,
-    draw.sc = TRUE, draw.vi = TRUE){
+    draw.sc = TRUE, draw.vi = TRUE, conf.int = .95, ylab = 'Observed',
+    xlab = 'Inferred'){
     if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
     if (is.null(num.omit.fit)) {num.omit.fit = round(.1*ncol(dat))}
     plot.list.marked = list()
@@ -314,16 +308,16 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
         # | dat.dys[marker,]<dys.sig.thr.low)
         marker.out.samples = colnames(dat.dys)[marker.out.exp.loc]
         dat.dys[marker,marker.out.exp.loc]
-        out = gqplot(y = dat[marker,], x = dat.imp[marker,], ci = .95,
-            ylab = 'Observed', xlab = 'Imputed',
+        out = gqplot(y = dat[marker,], x = dat.imp[marker,], ci = conf.int,
+            ylab = ylab, xlab = xlab,
             highlight = marker.out.samples, omit.fit = num.omit.fit)
             #, minl = minl, maxl = maxl)
         d=out[[1]]; plot.it=out[[2]]
         plot.list.marked[[marker.loc]] = plot.it;
         # draw scatter plot
         if (draw.sc) {
-            pdf(paste(dataset,'.',marker,'.sc','.dysreg.pdf',sep=''),width=3,
-            height=3); print(plot.list.marked[[marker.loc]]); dev.off()
+            pdf(paste(dataset,'.',marker,'.sc','.dysreg.pdf',sep=''),width=2.1,
+            height=2.3); print(plot.list.marked[[marker.loc]]); dev.off()
         }
         # draw violin plot
         if (draw.vi) {
@@ -358,9 +352,8 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
 #' @return the percentages of outliers corresponding to ranked markers.
 #' @examples
 #' set.seed(1)
-#' dat = as.data.frame(matrix(runif(10*10),10,10))
-#' rownames(dat) = paste('marker',1:10,sep='')
-#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat = setNames(as.data.frame(matrix(runif(10*10),10,10),
+#' row.names = paste('marker',1:10,sep='')), paste('sample',1:10,sep=''))
 #' dat.imp = artImpute(dat, ku=6)
 #' dat.dys = dysReg(dat, dat.imp)[[1]]
 #' result = rankPerOut(dat.dys, dys.sig.thr.upp = .25)
@@ -397,10 +390,7 @@ rankPerOut = function(dat.dys, marker.proc.list = NULL, dys.sig.thr.upp){
 #' annotation_col track colors manually. It is possible to define the colors
 #' for only some of the features.
 #' @param main character string, an overall title for the plot.
-#' @param stringency_col distinctiveness of the clusters (column) to be
-#' identified by the metafeatures algorithm (proportional to num. of clusters).
-#' @param stringency_row distinctiveness of the clusters (row) to be
-#' identified by the metafeatures algorithm (proportional to num. of clusters).
+#' @param legend logical, to determine if legend should be drawn or not.
 #' @param clustering_distance_rows distance measure used in clustering rows.
 #' Possible values are "correlation" for Pearson correlation and all the
 #' distances supported by dist, such as "euclidean", etc. If the value is
@@ -417,37 +407,54 @@ rankPerOut = function(dat.dys, marker.proc.list = NULL, dys.sig.thr.upp){
 #' @param cluster_rows logical, determining if the rows should be clustered;
 #' or a hclust object.
 #' @param cluster_cols similar to cluster_rows, but for columns.
+#' @param border_color color of cell borders on heatmap, use NA if no border
+#' should be drawn.
 #' @param annotate_new_clusters_col logical, to annotate cluster IDs (column)
 #' that will be identified.
 #' @param zero_white logical, to display 0 values as white in the colormap.
 #' @param color_palette vector of colors used in heatmap.
+#' @param show_rownames boolean, specifying if row names are be shown.
+#' @param show_colnames boolean, specifying if column names are be shown.
+#' @param min_data numeric, data value corresponding to minimum intensity in
+#' the color_palette
+#' @param max_data numeric, data value corresponding to maximum intensity in
+#' the color_palette
+#' @param treeheight_row the height of a tree for rows, if these are clustered.
+#' Default value is 50 points.
+#' @param treeheight_col the height of a tree for columns, if these are
+#' clustered. Default value is 50 points.
 #' @return tree, the hierarchical tree structure.
 #' @return cluster_IDs_row, the (row) cluster identities of the markers.
 #' @return cluster_IDs_col, the (column) cluster identities of the samples.
 #' @examples
 #' set.seed(1)
-#' dat = as.data.frame(matrix(runif(10*10),10,10))
-#' rownames(dat) = paste('marker',1:10,sep='')
-#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat = setNames(as.data.frame(matrix(runif(10*10),10,10),
+#' row.names = paste('marker',1:10,sep='')), paste('sample',1:10,sep=''))
 #' result = clusterData(dat)
 clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
-    annotation_colors = NULL, main = NA,
-    stringency_col = 6, stringency_row = 4,
+    annotation_colors = NULL, main = NA, legend = TRUE,
     clustering_distance_rows = 'euclidean',
-    clustering_distance_cols = 'euclidean',
+    clustering_distance_cols = 'euclidean', number_format = '%.0f',
     display_numbers = FALSE, num_clusters_row = NULL, num_clusters_col = NULL,
-    cluster_rows = TRUE, cluster_cols = TRUE,
+    cluster_rows = TRUE, cluster_cols = TRUE, border_color = 'gray60',
     annotate_new_clusters_col = FALSE, zero_white = FALSE,
-    color_palette = NULL){
+    color_palette = NULL, show_rownames = FALSE, show_colnames = FALSE,
+    min_data = min(data, na.rm=TRUE), max_data = max(data, na.rm=TRUE),
+    treeheight_row =
+        ifelse(methods::is(cluster_rows, "hclust") || cluster_rows, 50, 0),
+    treeheight_col =
+        ifelse(methods::is(cluster_cols, "hclust") || cluster_cols, 50, 0)){
     if (is.null(num_clusters_col)) {num_clusters_col = 1}
     if (is.null(num_clusters_row)) {num_clusters_row = 1}
     if (zero_white) {paletteLength = 100
         my.color = grDevices::colorRampPalette(
             c("#006699", "white", "red"))(paletteLength)
-        my.breaks = c(seq(min(data, na.rm = TRUE), 0,
-            length.out = ceiling(paletteLength/2) + 1), seq(max(data,
-            na.rm = TRUE)/paletteLength, max(data, na.rm = TRUE),
+        my.breaks = c(seq(min_data, 0, length.out = ceiling(paletteLength/2) ),
+            seq(max_data/paletteLength, max_data,
             length.out = floor(paletteLength/2)))
+        uni.bre = uniq(my.breaks, index.return = TRUE)
+        my.breaks = uni.bre$x
+        my.color = my.color[uni.bre$ix]
     } else {
         if (is.null(color_palette)){
             my.color=grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(
@@ -460,13 +467,15 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
     }
     tree = pheatmap::pheatmap(data, annotation_col = annotation_col,
         annotation_colors = annotation_colors,
-        display_numbers = display_numbers,
+        display_numbers = display_numbers, number_format = number_format,
         clustering_distance_cols = clustering_distance_cols,
         clustering_distance_rows = clustering_distance_rows,
         cluster_cols = cluster_cols, cluster_rows = cluster_rows,
-        cutree_cols = num_clusters_col, show_colnames = TRUE,
-        cutree_rows = num_clusters_row, show_rownames = TRUE,
-        main = main, color = my.color, breaks = my.breaks)
+        cutree_cols = num_clusters_col, show_colnames = show_colnames,
+        cutree_rows = num_clusters_row, show_rownames = show_rownames,
+        main = main, color = my.color, breaks = my.breaks,
+        border_color = border_color, treeheight_row = treeheight_row,
+        treeheight_col = treeheight_col, legend = legend)
     if (cluster_cols) {cluster_IDs_col = cutree(tree$tree_col,
         k = num_clusters_col)} else {cluster_IDs_col = NULL}
     if (cluster_rows) {cluster_IDs_row = cutree(tree$tree_row,
@@ -475,16 +484,18 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
         annotation_col_new = cbind(annotation_col,data.frame(cluster_IDs_col)[
             rownames(annotation_col),])
         colnames(annotation_col_new)[length(annotation_col_new)] =
-            'Putative.subtype'
+            'New.subtype'
         tree = pheatmap::pheatmap(data, annotation_col = annotation_col_new,
             annotation_colors = annotation_colors,
-            display_numbers = display_numbers,
+            display_numbers = display_numbers, number_format = number_format,
             clustering_distance_cols = clustering_distance_cols,
             clustering_distance_rows = clustering_distance_rows,
             cluster_cols = cluster_cols, cluster_rows = cluster_rows,
-            cutree_cols = num_clusters_col, show_colnames = TRUE,
-            cutree_rows = num_clusters_row, show_rownames = TRUE,
-            main = main, color = my.color, breaks = my.breaks)
+            cutree_cols = num_clusters_col, show_colnames = show_colnames,
+            cutree_rows = num_clusters_row, show_rownames = show_rownames,
+            main = main, color = my.color, breaks = my.breaks,
+            border_color = border_color, treeheight_row = treeheight_row,
+            treeheight_col = treeheight_col, legend = legend)
     }
     return(list(tree, cluster_IDs_row, cluster_IDs_col))
 }
@@ -530,11 +541,12 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
 #' statistical significance of each marker's outlier samples.
 #' @return a data list containing, for each cohort, the percentage of outlier
 #' samples for every marker.
+#' @return a data list containing, for each cohort, the outlier significance
+#' threshold.
 #' @examples
 #' set.seed(1)
-#' dat = as.data.frame(matrix(runif(10*10),10,10))
-#' rownames(dat) = paste('marker',1:10,sep='')
-#' colnames(dat) = paste('sample',1:10,sep='')
+#' dat = setNames(as.data.frame(matrix(runif(10*10),10,10),
+#' row.names = paste('marker',1:10,sep='')), paste('sample',1:10,sep=''))
 #' result = oppti(dat)
 #' @seealso [artImpute()] for how to set `miss.pstat` and `ku`
 oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
@@ -547,7 +559,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     if (!is.null(draw.ou.markers)) {draw.ou.plots = TRUE}
     # Load data
     if (is.character(data)){tryCatch({data = readRDS(data)},
-        warning=function(w){print(w)}, finally={})} else if (!is.list(data)){
+        warning=function(w){message(w)}, finally={})} else if (!is.list(data)){
         warning('Unrecognized format for the "data" object; must be a "list",
         or a "character" string referring to the file path of such object.');
         return()}
@@ -641,7 +653,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         } else {draw.sc.markers.i = draw.sc.markers[draw.sc.markers %in%
             pan.proc.markers[[i]]]}
         if (!is.null(draw.sc.markers.i)) {
-            # print(paste(c(pan.num[[i]], '|', draw.sc.markers.i),
+            # message(paste(c(pan.num[[i]], '|', draw.sc.markers.i),
             # collapse = ' '))
             markOut(pan.dat[[i]], pan.dat.imp[[i]], pan.dat.imp.test[[i]],
                 pan.dat.dys[[i]], pan.dys.sig.thr.upp[[i]], draw.sc.markers.i,
@@ -724,9 +736,9 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     }
     if (pan.num>1){
         return(list(pan.dat.dys, pan.dat.imp, pan.dat.imp.test,
-                    pan.marker.out.exp.per, pan.dys.sig.thr.upp))
+            pan.marker.out.exp.per, pan.dys.sig.thr.upp))
     } else {
         return(list(pan.dat.dys[[1]], pan.dat.imp[[1]], pan.dat.imp.test[[1]],
-                    pan.marker.out.exp.per[[1]], pan.dys.sig.thr.upp[[1]]))
+            pan.marker.out.exp.per[[1]], pan.dys.sig.thr.upp[[1]]))
     }
 }
