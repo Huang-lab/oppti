@@ -32,8 +32,7 @@ Draw column densities of an object over multiple plots by using
 limma::plotDensities() function.
 }
 \examples{
-dat = as.data.frame(matrix(1:(5*10),5,10))
-rownames(dat) = paste('marker',1:5,sep='')
-colnames(dat) = paste('sample',1:10,sep='')
+dat = setNames(as.data.frame(matrix(1:(5*10),5,10),
+row.names = paste('marker',1:5,sep='')), paste('sample',1:10,sep=''))
 plotDen(dat, name = 'myresults')
 }

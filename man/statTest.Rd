@@ -42,9 +42,8 @@ Kolmogorov-Smirnov (KS) test.
 }
 \examples{
 set.seed(1)
-dat = as.data.frame(matrix(runif(10*10),10,10))
-rownames(dat) = paste('marker',1:10,sep='')
-colnames(dat) = paste('sample',1:10,sep='')
+dat = setNames(as.data.frame(matrix(runif(10*10),10,10),
+row.names = paste('marker',1:10,sep='')), paste('sample',1:10,sep=''))
 dat.imp = artImpute(dat, ku=6)
 result = statTest(dat, dat.imp) # the dysregulations on marker4 is
 # statistically significant with p-value 0.05244755.

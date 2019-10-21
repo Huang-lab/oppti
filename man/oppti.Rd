@@ -71,15 +71,17 @@ statistical significance of each marker's outlier samples.
 
 a data list containing, for each cohort, the percentage of outlier
 samples for every marker.
+
+a data list containing, for each cohort, the outlier significance
+threshold.
 }
 \description{
 Find outlying markers and events across cancer types.
 }
 \examples{
 set.seed(1)
-dat = as.data.frame(matrix(runif(10*10),10,10))
-rownames(dat) = paste('marker',1:10,sep='')
-colnames(dat) = paste('sample',1:10,sep='')
+dat = setNames(as.data.frame(matrix(runif(10*10),10,10),
+row.names = paste('marker',1:10,sep='')), paste('sample',1:10,sep=''))
 result = oppti(dat)
 }
 \seealso{

@@ -5,13 +5,18 @@
 \title{Hierarchical cluster analysis}
 \usage{
 clusterData(data, annotation_row = NULL, annotation_col = NULL,
-annotation_colors = NULL, main = NA, stringency_col = 6,
-stringency_row = 4, clustering_distance_rows = "euclidean",
-clustering_distance_cols = "euclidean", display_numbers = FALSE,
-num_clusters_row = NULL, num_clusters_col = NULL,
-cluster_rows = TRUE, cluster_cols = TRUE,
-annotate_new_clusters_col = FALSE, zero_white = FALSE,
-color_palette = NULL)
+annotation_colors = NULL, main = NA, legend = TRUE,
+clustering_distance_rows = "euclidean",
+clustering_distance_cols = "euclidean", number_format = "\%.0f",
+display_numbers = FALSE, num_clusters_row = NULL,
+num_clusters_col = NULL, cluster_rows = TRUE, cluster_cols = TRUE,
+border_color = "gray60", annotate_new_clusters_col = FALSE,
+zero_white = FALSE, color_palette = NULL, show_rownames = FALSE,
+show_colnames = FALSE, min_data = min(data, na.rm = TRUE),
+max_data = max(data, na.rm = TRUE),
+treeheight_row = ifelse(methods::is(cluster_rows, "hclust") ||
+cluster_rows, 50, 0), treeheight_col = ifelse(methods::is(cluster_cols,
+"hclust") || cluster_cols, 50, 0))
 }
 \arguments{
 \item{data}{an object of log2-normalized protein (or gene) expressions,
@@ -31,11 +36,7 @@ for only some of the features.}
 
 \item{main}{character string, an overall title for the plot.}
 
-\item{stringency_col}{distinctiveness of the clusters (column) to be
-identified by the metafeatures algorithm (proportional to num. of clusters).}
-
-\item{stringency_row}{distinctiveness of the clusters (row) to be
-identified by the metafeatures algorithm (proportional to num. of clusters).}
+\item{legend}{logical, to determine if legend should be drawn or not.}
 
 \item{clustering_distance_rows}{distance measure used in clustering rows.
 Possible values are "correlation" for Pearson correlation and all the
@@ -60,12 +61,31 @@ or a hclust object.}
 
 \item{cluster_cols}{similar to cluster_rows, but for columns.}
 
+\item{border_color}{color of cell borders on heatmap, use NA if no border
+should be drawn.}
+
 \item{annotate_new_clusters_col}{logical, to annotate cluster IDs (column)
 that will be identified.}
 
 \item{zero_white}{logical, to display 0 values as white in the colormap.}
 
 \item{color_palette}{vector of colors used in heatmap.}
+
+\item{show_rownames}{boolean, specifying if row names are be shown.}
+
+\item{show_colnames}{boolean, specifying if column names are be shown.}
+
+\item{min_data}{numeric, data value corresponding to minimum intensity in
+the color_palette}
+
+\item{max_data}{numeric, data value corresponding to maximum intensity in
+the color_palette}
+
+\item{treeheight_row}{the height of a tree for rows, if these are clustered.
+Default value is 50 points.}
+
+\item{treeheight_col}{the height of a tree for columns, if these are
+clustered. Default value is 50 points.}
 }
 \value{
 tree, the hierarchical tree structure.
@@ -82,8 +102,7 @@ then the cluster structures are estimated by pair-wise analysis.
 }
 \examples{
 set.seed(1)
-dat = as.data.frame(matrix(runif(10*10),10,10))
-rownames(dat) = paste('marker',1:10,sep='')
-colnames(dat) = paste('sample',1:10,sep='')
+dat = setNames(as.data.frame(matrix(runif(10*10),10,10),
+row.names = paste('marker',1:10,sep='')), paste('sample',1:10,sep=''))
 result = clusterData(dat)
 }

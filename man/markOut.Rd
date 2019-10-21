@@ -6,7 +6,8 @@
 \usage{
 markOut(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
 marker.proc.list = NULL, dataset = "", num.omit.fit = NULL,
-draw.sc = TRUE, draw.vi = TRUE)
+draw.sc = TRUE, draw.vi = TRUE, conf.int = 0.95,
+ylab = "Observed", xlab = "Inferred")
 }
 \arguments{
 \item{dat}{an object of log2-normalized protein (or gene) expressions,
@@ -47,9 +48,8 @@ Mark outlying expressions on the scatter plot of a given marker
 }
 \examples{
 set.seed(1)
-dat = as.data.frame(matrix(runif(10*10),10,10))
-rownames(dat) = paste('marker',1:10,sep='')
-colnames(dat) = paste('sample',1:10,sep='')
+dat = setNames(as.data.frame(matrix(runif(10*10),10,10),
+row.names = paste('marker',1:10,sep='')), paste('sample',1:10,sep=''))
 dat.imp = artImpute(dat, ku=6)
 dat.imp.test = statTest(dat, dat.imp)[[1]]
 dat.dys = dysReg(dat, dat.imp)[[1]]
