@@ -284,6 +284,9 @@ statTest = function(dat, dat.imp, marker.proc.list = NULL, pval.insig = 2E-1) {
 #' marker.proc.list in a separate PDF file.
 #' @param draw.vi logical, to draw a violin plot for every marker in
 #' marker.proc.list in a separate PDF file.
+#' @param conf.int confidence interval to display around the regression line
+#' @param ylab a title for the y axis
+#' @param xlab a title for the x axis
 #' @return the scatter plots of the markers where the outlier dysregulation
 #' events are highlighted by red mark.
 #' @examples
