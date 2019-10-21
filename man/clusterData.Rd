@@ -7,8 +7,8 @@
 clusterData(data, annotation_row = NULL, annotation_col = NULL,
 annotation_colors = NULL, main = NA, legend = TRUE,
 clustering_distance_rows = "euclidean",
-clustering_distance_cols = "euclidean", number_format = "\%.0f",
-display_numbers = FALSE, num_clusters_row = NULL,
+clustering_distance_cols = "euclidean", display_numbers = FALSE,
+number_format = "\%.0f", num_clusters_row = NULL,
 num_clusters_col = NULL, cluster_rows = TRUE, cluster_cols = TRUE,
 border_color = "gray60", annotate_new_clusters_col = FALSE,
 zero_white = FALSE, color_palette = NULL, show_rownames = FALSE,
@@ -49,6 +49,10 @@ columns. Possible values the same as for clustering_distance_rows.}
 \item{display_numbers}{logical, determining if the numeric values are also
 printed to the cells. If this is a matrix (with same dimensions as original
 matrix), the contents of the matrix are shown instead of original values.}
+
+\item{number_format} {format strings (C printf style) of the numbers shown in
+cells. For example "\%.2f" shows 2 decimal places and "\%.1e" shows
+exponential notation (see more in sprintf).}
 
 \item{num_clusters_row}{number of clusters the rows are divided into, based
 on the hierarchical clustering (using cutree), if rows are not clustered,

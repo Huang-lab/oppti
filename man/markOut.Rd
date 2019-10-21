@@ -38,6 +38,10 @@ marker.proc.list in a separate PDF file.}
 
 \item{draw.vi}{logical, to draw a violin plot for every marker in
 marker.proc.list in a separate PDF file.}
+
+\item{conf.int}{confidence interval to display around the regression line}
+\item{ylab}{a title for the y axis}
+\item{xlab}{a title for the x axis}
 }
 \value{
 the scatter plots of the markers where the outlier dysregulation
