@@ -1,14 +1,15 @@
-    oppti 0.99.5
-----------------------------------------------------------------
-    FIRST VERSION - FEATURES
+oppti 0.99.12
+-------------------------
 
-* artImpute	Artificially miss and impute each data entry individually by ignoring outlying values
-* clusterData	Hierarchical cluster analysis
-* dropMarkers	Filter out markers
-* dysReg	Analyze dysregulated (protruding) events
-* markOut	Display outlying expressions
-* oppti		Outlier protein and phosphosite target identification
-* outScores	Analyze putative outliers
-* plotDen	Draw densities
-* rankPerOut	Rank markers by the percentage of outlying events
-* statTest	Analyze dysregulation significance
+Features in the first version, Bioconductor 3.10 Release (September 2019)
+
+    o artImpute	Artificially miss and impute each data entry individually by ignoring outlying values
+    o clusterData	Hierarchical cluster analysis
+    o dropMarkers	Filter out markers
+    o dysReg	Analyze dysregulated (protruding) events
+    o markOut	Display outlying expressions
+    o oppti		Outlier protein and phosphosite target identification
+    o outScores	Analyze putative outliers
+    o plotDen	Draw densities
+    o rankPerOut	Rank markers by the percentage of outlying events
+    o statTest	Analyze dysregulation significance
