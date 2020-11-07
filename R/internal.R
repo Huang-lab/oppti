@@ -13,7 +13,7 @@
             "oppti"),"\n",
         "https://github.com/Huang-lab/oppti\n"
     )
-    if (runif(1)<0) {packageStartupMessage(welcome.message)}
+    if (runif(1)<0.5) {packageStartupMessage(welcome.message)}
 }
 # _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
 #
