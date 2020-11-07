@@ -73,6 +73,12 @@ that will be identified.}
 
 \item{zero_white}{logical, to display 0 values as white in the colormap.}
 
+\item{color_low}{color code for the low intensity values in the colormap.}
+
+\item{color_mid}{color code for the medium intensity values in the colormap.}
+
+\item{color_high}{color code for the high intensity values in the colormap.}
+
 \item{color_palette}{vector of colors used in heatmap.}
 
 \item{show_rownames}{boolean, specifying if row names are be shown.}

@@ -63,7 +63,7 @@ plotDen = function(dat, name = '', per.plot = 8, main = NULL, group = NULL,
     num.plot = ceiling(ncol(dat)/per.plot)
     for (i in seq_len(num.plot)){
         pdf(paste(name,'_samples_',(per.plot*(i-1)+1),'to',min((per.plot*i),
-        ncol(dat)),'.pdf', sep = ''))
+        ncol(dat)),'.pdf', sep = ''), useDingbats = F)
         limma::plotDensities((dat[,(per.plot*(i-1)+1):min((per.plot*i),
         ncol(dat))]), main = main, group = group, legend = legend)
         dev.off()
@@ -133,8 +133,9 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
     k = min(ku, nrow(dat)); dat.mis.ref = dat
     # remove all outlying expressions to not skew imputation
     dat.mis.ref[out.pstats < miss.pstat] = NA
-    dat.dis = as.matrix(dist(dat.mis.ref, method = 'euclidean', diag = TRUE,
-        upper = TRUE))
+    dat.dis = parallelDist::parDist(x=dat.mis.ref, method='euclidean',
+                                    diag=TRUE, upper=TRUE)
+    dat.dis = as.matrix(dat.dis)
     dat.cor = as.matrix(cor(t(dat.mis.ref), use = 'pairwise.complete.obs'))
     for (i in marker.proc.list) {
         # choose k euclidean neighbors
@@ -319,8 +320,13 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
         plot.list.marked[[marker.loc]] = plot.it;
         # draw scatter plot
         if (draw.sc) {
-            pdf(paste(dataset,'.',marker,'.sc','.dysreg.pdf',sep=''),width=2.1,
-            height=2.3); print(plot.list.marked[[marker.loc]]); dev.off()
+            # pdf(paste(dataset,'.',marker,'.sc','.dysreg.pdf',sep=''),
+            # width=2.1, height=2.3, useDingbats = F)
+            # print(plot.list.marked[[marker.loc]]); dev.off()
+            ggsave(filename = paste(dataset,'.',marker,'.sc','.dysreg.pdf'
+                ,sep=''), plot = plot.list.marked[[marker.loc]],
+                device = 'pdf', width = 2.1, height = 2.3,
+                dpi = 'print', useDingbats = F)
         }
         # draw violin plot
         if (draw.vi) {
@@ -335,7 +341,7 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
                 ggplot2::ggtitle(as.double(dat.imp.test[marker,]))
             # # ggplot2::ylim(minl,maxl)
             pdf(paste(dataset,'.',marker,'.vi','.dysreg.pdf',sep=''),width=3,
-                height=3)
+                height=3, useDingbats = F)
             print(pl)
             dev.off()
         }
@@ -418,6 +424,9 @@ rankPerOut = function(dat.dys, marker.proc.list = NULL, dys.sig.thr.upp){
 #' @param annotate_new_clusters_col logical, to annotate cluster IDs (column)
 #' that will be identified.
 #' @param zero_white logical, to display 0 values as white in the colormap.
+#' @param color_low, color code for the low intensity values in the colormap.
+#' @param color_mid, color code for the medium intensity values in the colormap.
+#' @param color_high, color code for the high intensity values in the colormap.
 #' @param color_palette vector of colors used in heatmap.
 #' @param show_rownames boolean, specifying if row names are be shown.
 #' @param show_colnames boolean, specifying if column names are be shown.
@@ -444,6 +453,7 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
     number_format = '%.0f', num_clusters_row = NULL, num_clusters_col = NULL,
     cluster_rows = TRUE, cluster_cols = TRUE, border_color = 'gray60',
     annotate_new_clusters_col = FALSE, zero_white = FALSE,
+    color_low = '#006699', color_mid = 'white', color_high = 'red',
     color_palette = NULL, show_rownames = FALSE, show_colnames = FALSE,
     min_data = min(data, na.rm=TRUE), max_data = max(data, na.rm=TRUE),
     treeheight_row =
@@ -454,7 +464,7 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
     if (is.null(num_clusters_row)) {num_clusters_row = 1}
     if (zero_white) {paletteLength = 100
         my.color = grDevices::colorRampPalette(
-            c("#006699", "white", "red"))(paletteLength)
+            c(color_low, color_mid, color_high))(paletteLength)
         my.breaks = c(seq(min_data, 0, length.out = ceiling(paletteLength/2) ),
             seq(max_data/paletteLength, max_data,
             length.out = floor(paletteLength/2)))
@@ -603,7 +613,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         pan.nas = lapply(data, function(x){x=100*rowSums(is.na(x))/ncol(x)})
         for (i in seq_len(pan.num))
             {pdf(paste('',cohort.names[i],'.',panel,'.pdf',sep=''), width=6,
-                height=4);
+                height=4, useDingbats = F);
             graphics::hist(pan.nas[[i]][rownames(data[[i]]) %in% panel.markers]
             , xlab = '% NAs', ylab = 'Number of markers'
             , main = paste(cohort.names[i],' ', panel, ' > ', pan.det[[i]]
@@ -628,6 +638,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     if (save.data)
         {saveRDS(pan.dat.dys, file=paste('pan.dat.dys.',panel,'.RDS',sep=''))}
     # Analyze spurious events
+    message('Analyzing non-dysregulated markers [statTest]...')
     pan.dat.imp.test = tmp.lis; pan.markers.imp.insig = tmp.lis
     for (i in seq_len(pan.num))
         {out = statTest(pan.dat[[i]], pan.dat.imp[[i]], pan.proc.markers[[i]]);
@@ -639,9 +650,32 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         unlist(pan.dat.dys[[i]][pan.markers.imp.insig[[i]],])}
     pan.dys.sig.thr.upp = lapply(pan.dat.imp.insig.all.dys, function(x)
         {x=quantile(x, .95, na.rm = TRUE)})
+    # Permutation test to associate FDR of the marker overexpressions
+    message('Running permutation tests to associate FDR for each marker...')
+    pan.sym.tes = tmp.lis;
+    for (i in seq_len(pan.num)) {
+        message(paste0('Running permutation tests for ', cohort.names[i]))
+        dat.ids = colnames(pan.dat[[i]])
+        imp.ids = colnames(pan.dat.imp[[i]])
+        mar.sym.tes = data.frame(p = array(NA, nrow(pan.dat[[i]])), row.names = rownames(pan.dat[[i]]))
+        for (j in which(rownames(pan.dat[[i]]) %in% pan.proc.markers[[i]])) {
+            df = data.frame(ids = c(dat.ids, imp.ids),
+                exp = c(rep('observed', length(dat.ids)),
+                rep('imputed', length(imp.ids))),
+                val = as.numeric(c(pan.dat[[i]][j,], pan.dat.imp[[i]][j,])))
+            df = df[!df$ids %in% df$ids[is.na(df$val)],]
+            mar.sym.tes$p[j] = coin::pvalue(coin::symmetry_test(val ~ exp,
+                data = df, alternative = 'two.sided', paired = T))
+        }
+        mar.sym.tes$FDR = p.adjust(mar.sym.tes$p, method = 'BH')
+        pan.sym.tes[[i]] = mar.sym.tes
+    }
+
     if (demo.panels) {
+        message('Generating demo for the panel markers...')
         colors = c('red','orange','yellow','green','blue','purple');
-        limx=1; limy=1; pdf('pan.null.dys.ecdf.pdf', width=6,height=6);
+        limx=1; limy=1; pdf('pan.null.dys.ecdf.pdf', width=6,height=6,
+            useDingbats = F);
         graphics::plot(ecdf(pan.dat.imp.insig.all.dys[[1]]),
         col=colors[1], xlim=c(-limx,limx), ylim=c(1-limy,limy),
         main = 'Empirical CDF')
@@ -661,10 +695,12 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         if (!is.null(draw.sc.markers.i)) {
             # message(paste(c(pan.num[[i]], '|', draw.sc.markers.i),
             # collapse = ' '))
+            message('Drawing scatter plots [markOut]...')
             markOut(pan.dat[[i]], pan.dat.imp[[i]], pan.dat.imp.test[[i]],
                 pan.dat.dys[[i]], pan.dys.sig.thr.upp[[i]], draw.sc.markers.i,
                 cohort.names[i],draw.sc=draw.sc.plots,draw.vi=draw.vi.plots)}}}
     # Rank markers by the percentage of outlying events
+    message('Building heatmaps for percentage of outliers across cancers [rankPerOut] ...')
     pan.marker.out.exp.per = tmp.lis; for (i in seq_len(pan.num))
         {pan.marker.out.exp.per[[i]] = rankPerOut(pan.dat.dys[[i]],
         pan.proc.markers[[i]], pan.dys.sig.thr.upp[[i]])[[2]]}
@@ -699,7 +735,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
             display_numbers = FALSE, main = '% of outliers')[[1]]
         pdf(paste('pan.cancer.',panel,'.markers.outlier.scores.pdf', sep = ''),
             width = max(2,ceiling((ncol(tmp))**(.7)-1)),
-            height = max(2,ceiling((nrow(tmp))**(.7)-2)))
+            height = max(2,ceiling((nrow(tmp))**(.7)-2)), useDingbats = F)
         print(pan.mar.ranked.out.exp.per.tree); dev.off()
         tmp = t(pan.mar.out.exp.per[pan.mar.out.exp.per.rat.sor$ix[
             pan.mar.out.exp.per.rat.sor$x>0][seq_len(min(20,length(
@@ -712,12 +748,13 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
                         pan.mar.out.exp.per.rat.sor$x>0])))]]
         rownames(tmp) = colnames(pan.mar.out.exp.per)
         # Display the predefined marker set
+        message('Drawing heatmaps for percentage of outliers across cancers [rankPerOut] ...')
         pan.mar.ranked20.t.out.exp.per.tree = clusterData(tmp,
             cluster_cols = FALSE, cluster_rows = FALSE, display_numbers = TRUE,
             main = '% of outliers', color_palette = 'Reds')[[1]]
         pdf(paste('pan.cancer.',panel,'.top20.highly.outlying.markers.pdf',
             sep = ''), width = max(2,ceiling((ncol(tmp))**(.7)-1)),
-            height = max(2,ceiling((nrow(tmp))**(.7)-2)))
+            height = max(2,ceiling((nrow(tmp))**(.7)-2)), useDingbats = F)
         print(pan.mar.ranked20.t.out.exp.per.tree); dev.off()
         # Pan-cancer top-20 variably-highly-outlying markers
         if (pan.num>1) {
@@ -736,15 +773,18 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
             pdf(paste('pan.cancer.',panel,
                 '.top20.variably.outlying.markers.pdf', sep = ''),
                 width = max(2,ceiling((ncol(tmp))**(.7)-1)),
-                height = max(2,ceiling((nrow(tmp))**(.7)-2)))
+                height = max(2,ceiling((nrow(tmp))**(.7)-2)), useDingbats = F)
             print(pan.mar.ranked20.t.sd.out.exp.per.tree); dev.off()
         }
     }
+    message('End of analysis.')
     if (pan.num>1){
-        return(list(pan.dat.dys, pan.dat.imp, pan.dat.imp.test,
-            pan.marker.out.exp.per, pan.dys.sig.thr.upp))
+        res = list(pan.dat.dys, pan.dat.imp, pan.dat.imp.test,
+            pan.marker.out.exp.per, pan.dys.sig.thr.upp, pan.sym.tes)
     } else {
-        return(list(pan.dat.dys[[1]], pan.dat.imp[[1]], pan.dat.imp.test[[1]],
-            pan.marker.out.exp.per[[1]], pan.dys.sig.thr.upp[[1]]))
+        res = list(pan.dat.dys[[1]], pan.dat.imp[[1]], pan.dat.imp.test[[1]],
+            pan.marker.out.exp.per[[1]], pan.dys.sig.thr.upp[[1]], pan.sym.tes[[1]])
+        for (i in seq_along(res)) {names(res[[i]]) = cohort.names}
     }
+    return(res)
 }
