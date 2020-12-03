@@ -149,7 +149,7 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
         if (!is.na(xlab)) {gg = gg + ggplot2::xlab(xlab)}
         if (!is.na(ylab)) {gg = gg + ggplot2::ylab(ylab)}
     }
-    return(list(outlier.score, gg))
+    return(list(outlier.score, gg, fit$coefficients[2]))
 }
 # _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
 #

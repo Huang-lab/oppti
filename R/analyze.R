@@ -195,11 +195,13 @@ dysReg = function(dat, dat.imp, marker.proc.list = NULL, verbose = FALSE){
     dat.dys = data.frame(matrix(NA, m, n))
     rownames(dat.dys) = rownames(dat); colnames(dat.dys) = colnames(dat)
     plot.list = list()
+    slopes = list()
     for (i in which(rownames(dat) %in% marker.proc.list)) {
         out = gqplot(y = dat[i,], x = dat.imp[i,], omit.fit = num.omit.fit,
             ylab = 'Observed', xlab = 'Imputed')
-        d=out[[1]]; plot.it=out[[2]]
+        d=out[[1]]; plot.it=out[[2]]; slope=out[[3]]
         plot.list[[i]] = plot.it
+        slopes[[i]] = slope
         dat.dys[i, as.character(d$sampleID)] = d$dist2reg
         if (verbose){
             if (i %in% round(seq(round(m/100), m, length = 100))){
@@ -207,7 +209,7 @@ dysReg = function(dat, dat.imp, marker.proc.list = NULL, verbose = FALSE){
             }
         }
     }
-    return(list(dat.dys, plot.list))
+    return(list(dat.dys, plot.list, slopes))
 }
 #' @title Analyze dysregulation significance
 #' @description Rank-order markers by the significance of deviation of the
@@ -305,6 +307,7 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
     if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
     if (is.null(num.omit.fit)) {num.omit.fit = round(.1*ncol(dat))}
     plot.list.marked = list()
+    slopes = list()
     for (marker in marker.proc.list) {
         marker.loc = which(rownames(dat)==marker)
         # significant outlying events for the given marker
@@ -316,8 +319,9 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
             ylab = ylab, xlab = xlab,
             highlight = marker.out.samples, omit.fit = num.omit.fit)
             #, minl = minl, maxl = maxl)
-        d=out[[1]]; plot.it=out[[2]]
-        plot.list.marked[[marker.loc]] = plot.it;
+        d=out[[1]]; plot.it=out[[2]]; slope=out[[3]]
+        plot.list.marked[[marker.loc]] = plot.it
+        slopes[[marker.loc]] = slope
         # draw scatter plot
         if (draw.sc) {
             # pdf(paste(dataset,'.',marker,'.sc','.dysreg.pdf',sep=''),
@@ -346,7 +350,7 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
             dev.off()
         }
     }
-    return(plot.list.marked)
+    return(list(plot.list.marked, slopes))
 }
 #' @title Rank markers by the percentage of outlying events
 #' @description Ranks markers in the order of decreasing percentage of outlying
@@ -632,9 +636,13 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     if (save.data)
         {saveRDS(pan.dat.imp, file=paste('pan.dat.imp.',panel,'.RDS',sep=''))}
     # Analyze dysregulation events by a linear fit (qqplot)
-    pan.dat.dys = tmp.lis; for (i in seq_len(pan.num)) {pan.dat.dys[[i]] =
-        dysReg(pan.dat[[i]], pan.dat.imp[[i]], pan.proc.markers[[i]],
-        verbose = verbose)[[1]]}
+    pan.dat.dys = tmp.lis; pan.dat.dys.slope = tmp.lis;
+    for (i in seq_len(pan.num)) {
+        tmp.dys.reg = dysReg(pan.dat[[i]], pan.dat.imp[[i]],
+                             pan.proc.markers[[i]], verbose = verbose)
+        pan.dat.dys[[i]] = tmp.dys.reg[[1]]
+        pan.dat.dys.slope[[i]] = tmp.dys.reg[[3]]
+    }
     if (save.data)
         {saveRDS(pan.dat.dys, file=paste('pan.dat.dys.',panel,'.RDS',sep=''))}
     # Analyze spurious events
@@ -657,7 +665,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         message(paste0('Running permutation tests for ', cohort.names[i]))
         dat.ids = colnames(pan.dat[[i]])
         imp.ids = colnames(pan.dat.imp[[i]])
-        mar.sym.tes = data.frame(p = array(NA, nrow(pan.dat[[i]])), row.names = rownames(pan.dat[[i]]))
+        mar.sym.tes = data.frame(p = array(NA, nrow(pan.dat[[i]])),
+                                 row.names = rownames(pan.dat[[i]]))
         for (j in which(rownames(pan.dat[[i]]) %in% pan.proc.markers[[i]])) {
             df = data.frame(ids = c(dat.ids, imp.ids),
                 exp = c(rep('observed', length(dat.ids)),
@@ -700,7 +709,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
                 pan.dat.dys[[i]], pan.dys.sig.thr.upp[[i]], draw.sc.markers.i,
                 cohort.names[i],draw.sc=draw.sc.plots,draw.vi=draw.vi.plots)}}}
     # Rank markers by the percentage of outlying events
-    message('Building heatmaps for percentage of outliers across cancers [rankPerOut] ...')
+    message('Building heatmaps for percentage of outliers across cancers
+            [rankPerOut] ...')
     pan.marker.out.exp.per = tmp.lis; for (i in seq_len(pan.num))
         {pan.marker.out.exp.per[[i]] = rankPerOut(pan.dat.dys[[i]],
         pan.proc.markers[[i]], pan.dys.sig.thr.upp[[i]])[[2]]}
@@ -748,7 +758,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
                         pan.mar.out.exp.per.rat.sor$x>0])))]]
         rownames(tmp) = colnames(pan.mar.out.exp.per)
         # Display the predefined marker set
-        message('Drawing heatmaps for percentage of outliers across cancers [rankPerOut] ...')
+        message('Drawing heatmaps for percentage of outliers across cancers
+                [rankPerOut] ...')
         pan.mar.ranked20.t.out.exp.per.tree = clusterData(tmp,
             cluster_cols = FALSE, cluster_rows = FALSE, display_numbers = TRUE,
             main = '% of outliers', color_palette = 'Reds')[[1]]
@@ -780,10 +791,12 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     message('End of analysis.')
     if (pan.num>1){
         res = list(pan.dat.dys, pan.dat.imp, pan.dat.imp.test,
-            pan.marker.out.exp.per, pan.dys.sig.thr.upp, pan.sym.tes)
+            pan.marker.out.exp.per, pan.dys.sig.thr.upp, pan.dat.dys.slope)
+           # pan.marker.out.exp.per, pan.dys.sig.thr.upp, pan.sym.tes)
     } else {
         res = list(pan.dat.dys[[1]], pan.dat.imp[[1]], pan.dat.imp.test[[1]],
-            pan.marker.out.exp.per[[1]], pan.dys.sig.thr.upp[[1]], pan.sym.tes[[1]])
+            pan.marker.out.exp.per[[1]], pan.dys.sig.thr.upp[[1]],
+            pan.dat.dys.slope[[1]])
         for (i in seq_along(res)) {names(res[[i]]) = cohort.names}
     }
     return(res)
