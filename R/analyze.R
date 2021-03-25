@@ -306,8 +306,13 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
     xlab = 'Inferred'){
     if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
     if (is.null(num.omit.fit)) {num.omit.fit = round(.1*ncol(dat))}
+<<<<<<< HEAD
     plot.list.marked = as.list(rep(NA,nrow(dat)))
     slopes = as.list(rep(NA,nrow(dat)))
+=======
+    plot.list.marked = list()
+    slopes = list()
+>>>>>>> 01d23911b70b9ef75610a10ccd7a72912a26808f
     for (marker in marker.proc.list) {
         marker.loc = which(rownames(dat)==marker)
         # significant outlying events for the given marker
