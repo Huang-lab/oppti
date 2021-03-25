@@ -581,8 +581,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     if (is.character(data)){tryCatch({data = readRDS(data)},
         warning=function(w){message(w)}, finally={})} else if (!is.list(data)){
         warning('Unrecognized format for the "data" object; must be a "list",
-        or a "character" string referring to the file path of such object.');
-        return()}
+        or a "character" string referring to the file path of such object.')}
     if (!methods::is(data, 'list')) {data = list(data)}
     if (mad.norm) {data = lapply(data, function(x){x=madNorm(x)})}
     if (is.null(cohort.names)) {cohort.names = unlist(lapply(data, function(x){
@@ -629,9 +628,12 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     }
     # Generate inferred expressions by weighted average of nearest neighbors
     tic = Sys.time()
-    pan.dat.imp = tmp.lis; for (i in seq_len(pan.num)) {pan.dat.imp[[i]] =
-        artImpute(dat = pan.dat[[i]], ku = ku, miss.pstat = miss.pstat,
-        marker.proc.list = pan.proc.markers[[i]], verbose = verbose)}
+    pan.dat.imp = tmp.lis; for (i in seq_len(pan.num)) {
+        if (min(dim(pan.dat[[i]]))==0) {warning('Error. Data missing.');
+            return()}
+        pan.dat.imp[[i]] = artImpute(dat = pan.dat[[i]], ku = ku, miss.pstat =
+            miss.pstat, marker.proc.list = pan.proc.markers[[i]], verbose =
+                verbose)}
     toc = Sys.time()-tic
     if (save.data)
         {saveRDS(pan.dat.imp, file=paste('pan.dat.imp.',panel,'.RDS',sep=''))}

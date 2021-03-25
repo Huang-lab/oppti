@@ -47,10 +47,15 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
     if (is.null(marker.name)) {marker.name = rownames(y)}
     if (is.null(marker.name)) {marker.name = rownames(x)}
     # cohort name
-    if (is.null(cohort.name)) {cohort.name =
-        strsplit(colnames(y)[1],'\\.')[[1]][1]}
-    if (is.null(cohort.name)) {cohort.name =
-        strsplit(colnames(x)[1],'\\.')[[1]][1]}
+    if (is.null(cohort.name)) {
+        tryCatch({cohort.name = strsplit(colnames(y)[1],'\\.')[[1]][1]
+        }, error=function(w) w, finally = {})
+    }
+    if (is.null(cohort.name)) {
+        tryCatch({cohort.name = strsplit(colnames(x)[1],'\\.')[[1]][1]
+        }, error=function(w) w, finally = {})
+    }
+    if (is.null(cohort.name)) {cohort.name = ''}
     # align dimensions
     if (nrow(as.matrix(y)) < ncol(as.matrix(y))) {y = t(y)}
     if (nrow(as.matrix(x)) < ncol(as.matrix(x))) {x = t(x)}
