@@ -655,7 +655,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         saveRDS(pan.dat.dys, file=paste('pan.dat.dys.',panel,'.RDS',sep=''))
     }
     # Analyze spurious events
-    message('Analyzing non-dysregulated markers [statTest]...')
+    if (verbose){
+    message('Analyzing non-dysregulated markers [statTest]...')}
     pan.dat.imp.test = tmp.lis; pan.markers.imp.insig = tmp.lis
     for (i in seq_len(pan.num))
         {out = statTest(pan.dat[[i]], pan.dat.imp[[i]], pan.proc.markers[[i]]);
@@ -668,10 +669,12 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     pan.dys.sig.thr.upp = lapply(pan.dat.imp.insig.all.dys, function(x)
         {x=quantile(x, .95, na.rm = TRUE)})
     # Permutation test to associate FDR of the marker overexpressions
-    message('Running permutation tests to associate FDR for each marker...')
+    if (verbose){
+    message('Running permutation tests to associate FDR for each marker...')}
     pan.sym.tes = tmp.lis;
     for (i in seq_len(pan.num)) {
-        message(paste0('Running permutation tests for ', cohort.names[i]))
+        if (verbose){
+            message(paste0('Running permutation tests for ', cohort.names[i]))}
         dat.ids = colnames(pan.dat[[i]])
         imp.ids = colnames(pan.dat.imp[[i]])
         mar.sym.tes = data.frame(p = array(NA, nrow(pan.dat[[i]])),
@@ -690,7 +693,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     }
 
     if (demo.panels) {
-        message('Generating demo for the panel markers...')
+        if (verbose){
+            message('Generating demo for the panel markers...')}
         colors = c('red','orange','yellow','green','blue','purple');
         limx=1; limy=1; pdf('pan.null.dys.ecdf.pdf', width=6,height=6,
             useDingbats = F);
@@ -711,15 +715,17 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         } else {draw.sc.markers.i = draw.sc.markers[draw.sc.markers %in%
             pan.proc.markers[[i]]]}
         if (!is.null(draw.sc.markers.i)) {
+            if (verbose){
             # message(paste(c(pan.num[[i]], '|', draw.sc.markers.i),
             # collapse = ' '))
-            message('Drawing scatter plots [markOut]...')
+            message('Drawing scatter plots [markOut]...')}
             markOut(pan.dat[[i]], pan.dat.imp[[i]], pan.dat.imp.test[[i]],
                 pan.dat.dys[[i]], pan.dys.sig.thr.upp[[i]], draw.sc.markers.i,
                 cohort.names[i],draw.sc=draw.sc.plots,draw.vi=draw.vi.plots)}}}
     # Rank markers by the percentage of outlying events
-    message('Building heatmaps for percentage of outliers across cancers
-            [rankPerOut] ...')
+    if (verbose){
+        message('Building heatmaps for percentage of outliers across cancers
+            [rankPerOut] ...')}
     pan.marker.out.exp.per = tmp.lis; for (i in seq_len(pan.num))
         {pan.marker.out.exp.per[[i]] = rankPerOut(pan.dat.dys[[i]],
         pan.proc.markers[[i]], pan.dys.sig.thr.upp[[i]])[[2]]}
@@ -767,8 +773,9 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
                         pan.mar.out.exp.per.rat.sor$x>0])))]]
         rownames(tmp) = colnames(pan.mar.out.exp.per)
         # Display the predefined marker set
-        message('Drawing heatmaps for percentage of outliers across cancers
-                [rankPerOut] ...')
+        if (verbose){
+            message('Drawing heatmaps for percentage of outliers across cancers
+                [rankPerOut] ...')}
         pan.mar.ranked20.t.out.exp.per.tree = clusterData(tmp,
             cluster_cols = FALSE, cluster_rows = FALSE, display_numbers = TRUE,
             main = '% of outliers', color_palette = 'Reds')[[1]]
@@ -797,7 +804,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
             print(pan.mar.ranked20.t.sd.out.exp.per.tree); dev.off()
         }
     }
-    message('End of analysis.')
+    if (verbose){message('End of analysis.')}
     if (pan.num>1){
         res = list(pan.dat.dys, pan.dat.imp, pan.dat.imp.test,
             pan.marker.out.exp.per, pan.dys.sig.thr.upp, pan.dat.dys.slope)
