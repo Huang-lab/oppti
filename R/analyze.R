@@ -136,7 +136,7 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
     dat.dis = parallelDist::parDist(x=dat.mis.ref, method='euclidean',
                                     diag=TRUE, upper=TRUE)
     dat.dis = as.matrix(dat.dis)
-    if (sum(is.na(dat.dis)) > prod(dim(dat.dis))/10){
+    if (sum(is.na(dat.dis)) > prod(dim(dat.dis))/20){
         dat.dis = dist(x=dat.mis.ref, method='euclidean',
                        diag=TRUE, upper=TRUE)
         dat.dis = as.matrix(dat.dis)
