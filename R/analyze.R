@@ -136,6 +136,11 @@ artImpute = function(dat, ku = 6, marker.proc.list = NULL, miss.pstat = 4E-1,
     dat.dis = parallelDist::parDist(x=dat.mis.ref, method='euclidean',
                                     diag=TRUE, upper=TRUE)
     dat.dis = as.matrix(dat.dis)
+    if (sum(is.na(dat.dis)) > prod(dim(dat.dis))/10){
+        dat.dis = dist(x=dat.mis.ref, method='euclidean',
+                       diag=TRUE, upper=TRUE)
+        dat.dis = as.matrix(dat.dis)
+    }
     dat.cor = as.matrix(cor(t(dat.mis.ref), use = 'pairwise.complete.obs'))
     for (i in marker.proc.list) {
         # choose k euclidean neighbors
@@ -306,13 +311,8 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
     xlab = 'Inferred'){
     if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
     if (is.null(num.omit.fit)) {num.omit.fit = round(.1*ncol(dat))}
-<<<<<<< HEAD
     plot.list.marked = as.list(rep(NA,nrow(dat)))
     slopes = as.list(rep(NA,nrow(dat)))
-=======
-    plot.list.marked = list()
-    slopes = list()
->>>>>>> 01d23911b70b9ef75610a10ccd7a72912a26808f
     for (marker in marker.proc.list) {
         marker.loc = which(rownames(dat)==marker)
         # significant outlying events for the given marker
@@ -640,8 +640,9 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
             miss.pstat, marker.proc.list = pan.proc.markers[[i]], verbose =
                 verbose)}
     toc = Sys.time()-tic
-    if (save.data)
-        {saveRDS(pan.dat.imp, file=paste('pan.dat.imp.',panel,'.RDS',sep=''))}
+    if (save.data){
+        saveRDS(pan.dat.imp, file=paste('pan.dat.imp.',panel,'.RDS',sep=''))
+    }
     # Analyze dysregulation events by a linear fit (qqplot)
     pan.dat.dys = tmp.lis; pan.dat.dys.slope = tmp.lis;
     for (i in seq_len(pan.num)) {
@@ -650,8 +651,9 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         pan.dat.dys[[i]] = tmp.dys.reg[[1]]
         pan.dat.dys.slope[[i]] = tmp.dys.reg[[3]]
     }
-    if (save.data)
-        {saveRDS(pan.dat.dys, file=paste('pan.dat.dys.',panel,'.RDS',sep=''))}
+    if (save.data){
+        saveRDS(pan.dat.dys, file=paste('pan.dat.dys.',panel,'.RDS',sep=''))
+    }
     # Analyze spurious events
     message('Analyzing non-dysregulated markers [statTest]...')
     pan.dat.imp.test = tmp.lis; pan.markers.imp.insig = tmp.lis
@@ -804,6 +806,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         res = list(pan.dat.dys[[1]], pan.dat.imp[[1]], pan.dat.imp.test[[1]],
             pan.marker.out.exp.per[[1]], pan.dys.sig.thr.upp[[1]],
             pan.dat.dys.slope[[1]])
+        for (i in seq_along(res)) {res[[i]] = list(res[[i]])}
         for (i in seq_along(res)) {names(res[[i]]) = cohort.names}
     }
     return(res)
