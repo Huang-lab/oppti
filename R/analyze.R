@@ -249,8 +249,9 @@ statTest = function(dat, dat.imp, marker.proc.list = NULL, pval.insig = 2E-1) {
     if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
     m = nrow(dat); n = ncol(dat)
     dat.imp.test = matrix(NA,m,1); rownames(dat.imp.test) = rownames(dat)
-    for (i in marker.proc.list) {dat.imp.test[i,] = stats::ks.test(t(dat[i,]),
-        dat.imp[i,], alternative = 'two.sided')$p.value}
+    for (i in marker.proc.list) {dat.imp.test[i,] = stats::ks.test(
+        as.numeric(t(dat[i,])), as.numeric(dat.imp[i,]),
+        alternative = 'two.sided')$p.value}
     dat.imp.test.sor = sort(dat.imp.test, decreasing = FALSE,
         index.return = TRUE, na.last = TRUE)
     markers.imp.insig.loc =
