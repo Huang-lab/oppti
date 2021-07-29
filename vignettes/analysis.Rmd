@@ -31,7 +31,7 @@ colnames(cohort1.proteomes) = paste('cohort1.sample', 1:30, sep = '')
 ```
 Outlier analysis is run by the `oppti` function:
 ```{r, eval = TRUE}
-library(oppti)
+library('oppti')
 result = oppti(cohort1.proteomes)
 ```
 
@@ -41,7 +41,7 @@ first element of the result:
 cohort1.outlier.scores = result[[1]] 
 ```
 ```{r, eval = TRUE, echo = FALSE, size = 8}
-knitr::kable(cohort1.outlier.scores[1:10,1:4], digits = 2, 
+knitr::kable(cohort1.outlier.scores[[1]][1:10,1:4], digits = 2, 
     caption = "Example matrix of the outlier scores, displayed for the
     first 10 proteins (rows) and the first 4 samples (columns)",
     row.names = TRUE)
@@ -63,7 +63,7 @@ element of the result:
 cohort1.normal.states = result[[2]] 
 ```
 ```{r, eval = TRUE, echo = FALSE, size = 8}
-knitr::kable(cohort1.normal.states[1:10,1:4], digits = 2, 
+knitr::kable(cohort1.normal.states[[1]][1:10,1:4], digits = 2, 
     caption = "Example matrix of the normal states",
     row.names = TRUE)
 ```
@@ -76,7 +76,7 @@ element of the result:
 cohort1.markers.tests = result[[3]] 
 ```
 ```{r, eval = TRUE, echo = FALSE, size = 8}
-knitr::kable(cohort1.markers.tests[1:10,], digits = 4, 
+knitr::kable(cohort1.markers.tests[[1]][1:10,], digits = 4, 
     caption = "Statistical significance of outlying markers",
     row.names = TRUE)
 ```
