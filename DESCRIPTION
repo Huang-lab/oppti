@@ -23,6 +23,7 @@ Imports:
     devtools,
     coin
 Suggests:
+    rmarkdown
 VignetteBuilder: knitr
 URL: https://github.com/Huang-lab/oppti
 BugReports: https://github.com/Huang-lab/oppti/issues
