@@ -1,7 +1,7 @@
 Package: oppti
 Type: Package
 Title: Outlier Protein and Phosphosite Target Identifier
-Version: 1.7.1
+Version: 1.7.2
 Date: 2019-07-03
 Author: Abdulkadir Elmas
 Maintainer: Abdulkadir Elmas <abdulkadir.elmas@mssm.edu>
@@ -22,8 +22,7 @@ Imports:
     methods,
     devtools,
     coin
-Suggests:
-    rmarkdown 
+Suggests: markdown
 VignetteBuilder: knitr
 URL: https://github.com/Huang-lab/oppti
 BugReports: https://github.com/Huang-lab/oppti/issues
