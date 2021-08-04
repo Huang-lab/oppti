@@ -669,29 +669,29 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         unlist(pan.dat.dys[[i]][pan.markers.imp.insig[[i]],])}
     pan.dys.sig.thr.upp = lapply(pan.dat.imp.insig.all.dys, function(x)
         {x=quantile(x, .95, na.rm = TRUE)})
-    # Permutation test to associate FDR of the marker overexpressions
-    if (verbose){
-    message('Running permutation tests to associate FDR for each marker...')}
-    pan.sym.tes = tmp.lis;
-    for (i in seq_len(pan.num)) {
-        if (verbose){
-            message(paste0('Running permutation tests for ', cohort.names[i]))}
-        dat.ids = colnames(pan.dat[[i]])
-        imp.ids = colnames(pan.dat.imp[[i]])
-        mar.sym.tes = data.frame(p = array(NA, nrow(pan.dat[[i]])),
-                                 row.names = rownames(pan.dat[[i]]))
-        for (j in which(rownames(pan.dat[[i]]) %in% pan.proc.markers[[i]])) {
-            df = data.frame(ids = c(dat.ids, imp.ids),
-                exp = c(rep('observed', length(dat.ids)),
-                rep('imputed', length(imp.ids))),
-                val = as.numeric(c(pan.dat[[i]][j,], pan.dat.imp[[i]][j,])))
-            df = df[!df$ids %in% df$ids[is.na(df$val)],]
-            mar.sym.tes$p[j] = coin::pvalue(coin::symmetry_test(val ~ exp,
-                data = df, alternative = 'two.sided', paired = T))
-        }
-        mar.sym.tes$FDR = p.adjust(mar.sym.tes$p, method = 'BH')
-        pan.sym.tes[[i]] = mar.sym.tes
-    }
+    # # Permutation test to associate FDR of the marker overexpressions
+    # if (verbose){
+    # message('Running permutation tests to associate FDR for each marker...')}
+    # pan.sym.tes = tmp.lis;
+    # for (i in seq_len(pan.num)) {
+    #     if (verbose){
+    #         message(paste0('Running permutation tests for ', cohort.names[i]))}
+    #     dat.ids = colnames(pan.dat[[i]])
+    #     imp.ids = colnames(pan.dat.imp[[i]])
+    #     mar.sym.tes = data.frame(p = array(NA, nrow(pan.dat[[i]])),
+    #                              row.names = rownames(pan.dat[[i]]))
+    #     for (j in which(rownames(pan.dat[[i]]) %in% pan.proc.markers[[i]])) {
+    #         df = data.frame(ids = c(dat.ids, imp.ids),
+    #             exp = c(rep('observed', length(dat.ids)),
+    #             rep('imputed', length(imp.ids))),
+    #             val = as.numeric(c(pan.dat[[i]][j,], pan.dat.imp[[i]][j,])))
+    #         df = df[!df$ids %in% df$ids[is.na(df$val)],]
+    #         mar.sym.tes$p[j] = coin::pvalue(coin::symmetry_test(val ~ exp,
+    #             data = df, alternative = 'two.sided', paired = T))
+    #     }
+    #     mar.sym.tes$FDR = p.adjust(mar.sym.tes$p, method = 'BH')
+    #     pan.sym.tes[[i]] = mar.sym.tes
+    # }
 
     if (demo.panels) {
         if (verbose){
