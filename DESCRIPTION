@@ -21,8 +21,7 @@ Imports:
     knitr,
     methods,
     devtools,
-    coin,
-    parallelDist
+    parallelDist,
 Suggests: markdown
 VignetteBuilder: knitr
 URL: https://github.com/Huang-lab/oppti
