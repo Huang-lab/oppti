@@ -1,5 +1,6 @@
 # Installation
-To install this package, start R (version "4.1") and enter:
+
+To install this package, start R (version “4.1”) and enter:
 
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -7,14 +8,17 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("oppti")
 ```
 
-For older versions of R, please refer to the appropriate Bioconductor release.
+For older versions of R, please refer to the appropriate Bioconductor
+release.
 
 # Documentation
-To view documentation for the version of this package installed in your system, start R and enter:
+
+To view documentation for the version of this package installed in your
+system, start R and enter:
 
 ``` r
 browseVignettes("oppti")
-``` 
+```
 
 # Analyze proteomics data of a single cohort
 

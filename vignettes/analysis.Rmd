@@ -21,7 +21,7 @@ library('oppti')
 # Installation
 To install this package, start R (version "4.1") and enter:
 
-```{r, eval = TRUE}
+```{r, eval = FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("oppti")
@@ -32,7 +32,7 @@ For older versions of R, please refer to the appropriate Bioconductor release.
 # Documentation
 To view documentation for the version of this package installed in your system, start R and enter:
 
-```{r, eval = TRUE}
+```{r, eval = FALSE}
 browseVignettes("oppti")
 ``` 
 
