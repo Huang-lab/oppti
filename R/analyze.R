@@ -584,7 +584,9 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     demo.panels = FALSE, save.data = FALSE, draw.sc.plots = FALSE,
     draw.vi.plots = FALSE, draw.sc.markers = NULL,
     draw.ou.plots = FALSE, draw.ou.markers = NULL,
-    permutation.tests = TRUE, verbose = FALSE) {
+    permutation.tests = TRUE, n.per.test = 10, draw.per.test = FALSE,
+    plot.set.per.test = list(BRCA = c('ERBB2'), CCRCC = c('ERBB2', 'TP53')),
+    verbose = FALSE) {
     # fix flags: let draw.*.markers master draw.*.plots
     if (!is.null(draw.sc.markers)) {draw.sc.plots = TRUE}
     if (!is.null(draw.ou.markers)) {draw.ou.plots = TRUE}
@@ -707,9 +709,9 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
                 pan.dat.dys[[i]], pan.dys.sig.thr.upp[[i]], draw.sc.markers.i,
                 cohort.names[i],draw.sc=draw.sc.plots,draw.vi=draw.vi.plots)}}}
     # Rank markers by the percentage of outlying events
-    if (verbose){
-        message('Building heatmaps for percentage of outliers across cancers
-            [rankPerOut] ...')}
+    if (verbose) {message(
+    'Building heatmaps: percentage of outliers across cancers [rankPerOut] ...'
+                )}
     pan.marker.out.exp.per = tmp.lis; for (i in seq_len(pan.num))
         {pan.marker.out.exp.per[[i]] = rankPerOut(pan.dat.dys[[i]],
         pan.proc.markers[[i]], pan.dys.sig.thr.upp[[i]])[[2]]}
@@ -802,7 +804,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     # Permutation tests
     if (permutation.tests){
         if (verbose) {message('Running permutation tests...')}
-        res = c(res, list(per.test(res, verbose = verbose)))
+        res = c(res, list(per.test(res, verbose = verbose, n = n.per.test,
+            draw = draw.per.test, plot.set = plot.set.per.test)))
     }
     if (verbose) {message('End of permutation tests.')}
     return(res)
