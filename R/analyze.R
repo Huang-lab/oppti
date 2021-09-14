@@ -788,7 +788,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
             print(pan.mar.ranked20.t.sd.out.exp.per.tree); dev.off()
         }
     }
-    if (verbose){message('End of analysis.')}
+    if (verbose){message('End of overexpression analysis.')}
     if (pan.num>1){
         res = list(pan.dat.dys, pan.dat.imp, pan.dat.imp.test,
             pan.marker.out.exp.per, pan.dys.sig.thr.upp, pan.dat.dys.slope)
@@ -801,7 +801,9 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     }
     # Permutation tests
     if (permutation.tests){
-        res = c(res, list(per.test(res)))
+        if (verbose) {message('Running permutation tests...')}
+        res = c(res, list(per.test(res, verbose = verbose)))
     }
+    if (verbose) {message('End of permutation tests.')}
     return(res)
 }

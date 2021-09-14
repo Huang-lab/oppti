@@ -221,7 +221,7 @@ uniq = function(x, index.return = FALSE) {
 
 per.test = function(res = oppti.result, res.can.typ = names(res[[1]]), n = 10,
                     draw = FALSE, plot.set = list(BRCA = c('PRKACB'), CCRCC =
-                                                      c('PRKAR2B', 'ATR'))){
+                        c('PRKAR2B', 'ATR')), verbose = FALSE){
     tmp.lis = as.list(rep(NA,length(res[[1]]))) #template for a cohort-size
     # data object
     if (is.null(res.can.typ)){
@@ -257,7 +257,7 @@ per.test = function(res = oppti.result, res.can.typ = names(res[[1]]), n = 10,
             data.overexpression[,i] = 100*rowMeans(dys > thr, na.rm = T)
             per.don = which(ceiling(seq(from = num.permutation/100, to =
                 num.permutation, by = num.permutation/100)) %in% i) #**
-            if (length(per.don) > 0) {message(per.don, '% done.')}
+            if (length(per.don) > 0 & verbose) {message(per.don, '% done.')}
         }
         #' # Different markers have different permutation distribution! Combine
         #'  them to generate a universal permutation distribution that is the
@@ -270,7 +270,7 @@ per.test = function(res = oppti.result, res.can.typ = names(res[[1]]), n = 10,
                            names(observed.overexpression))
         for (j in seq_along(observed.overexpression)) {
             if (j %in% round(seq(from=1,to=length(observed.overexpression),
-                                 len=100))){
+                                 len=100)) & verbose){
                 message('evaluating marker in ',cancer,': ',
                         round(100*j/length(observed.overexpression)),'% done.')
             }
