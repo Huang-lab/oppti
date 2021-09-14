@@ -598,7 +598,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     if (is.null(cohort.names)) {cohort.names = unlist(lapply(data, function(x){
         x=strsplit(colnames(x)[1],'\\.')[[1]][1]}))} #cohort names
     pan.num = length(cohort.names) #number of cohorts
-    tmp.lis = as.list(rep(NA,pan.num)) #template for a cohort-size data object
+    tmp.lis = setNames(as.list(rep(NA,pan.num)), cohort.names) #template for a
+        # cohort-size data object
     # Filter out markers with >= tol.nas percent missing values
     pan.dat = lapply(data, function(x){x=dropMarkers(x,
         percent_NA = tol.nas/100, low_mean_and_std = NULL,
