@@ -237,9 +237,7 @@ per.test = function(res = oppti.result, res.can.typ = names(res[[1]]), n = 10,
         set.seed(1)
         thr = res[[5]][[cancer]]
         dys = res[[1]][[cancer]]
-        # num.permutation = round(ncol(dys)/1) #***
-        num.permutation = round(ncol(dys))*n # proportionate to cohort size
-        # (degree of freedom)
+        num.permutation = round(ncol(dys))*n # proportionate to cohort size dof
         observed.overexpression =  100*rowMeans(dys > thr, na.rm = T)
         data.overexpression = setNames(data.frame(matrix(NA, nrow(dys),
             num.permutation), row.names = rownames(dys)), paste0('data',
@@ -265,8 +263,6 @@ per.test = function(res = oppti.result, res.can.typ = names(res[[1]]), n = 10,
         #'  them to generate a universal permutation distribution that is the
         #'  null distribution for an arbitrary marker's overexpression
         data.overexpression = unlist(data.overexpression)
-        # p.value = apply(as.matrix(observed.overexpression), 1, function(x)
-        # {mean(data.overexpression > x, na.rm = T)})
         data.overexpression = sort(as.numeric(data.overexpression))#exclude NA
         data.overexpression = data.overexpression[!is.na(data.overexpression)]
         L = length(data.overexpression)
@@ -274,7 +270,7 @@ per.test = function(res = oppti.result, res.can.typ = names(res[[1]]), n = 10,
                            names(observed.overexpression))
         for (j in seq_along(observed.overexpression)) {
             if (j %in% round(seq(from=1,to=length(observed.overexpression),
-                                 len=100))){ #*** try storing this seq
+                                 len=100))){
                 message('evaluating marker in ',cancer,': ',
                         round(100*j/length(observed.overexpression)),'% done.')
             }
