@@ -135,11 +135,13 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
             ggplot2::geom_line(ggplot2::aes(variable2, clower), size = .1) +
             ggplot2::theme_bw() +
             ggplot2::xlim(minx,maxx) + ggplot2::ylim(miny,maxy) +
-            ggplot2::ggtitle(paste(marker.name, 'in', cohort.name))
+            ggplot2::ggtitle(paste0(marker.name, ' in\n', cohort.name))
+            # ggplot2::theme(plot.title = ggtext::element_textbox_simple())
         if (!is.na(xlab)) {gg = gg + ggplot2::xlab(xlab)}
         if (!is.na(ylab)) {gg = gg + ggplot2::ylab(ylab)}
     } else {
-        gg = ggplot2::ggplot(df[-which(rownames.df %in% highlight),], ggplot2::aes(x=variable2, y=variable1)) +
+        gg = ggplot2::ggplot(df[-which(rownames.df %in% highlight),],
+                             ggplot2::aes(x=variable2, y=variable1)) +
             ggplot2::geom_point(ggplot2::aes(variable2, variable1),
                 shape = 1, size = 1.5) +
             ggplot2::geom_abline(intercept = fit$coefficients[1],
@@ -148,9 +150,11 @@ gqplot = function(y, x, ci = 0.95, xlab = NULL, ylab = NULL, dist.sort = FALSE,
             ggplot2::geom_line(ggplot2::aes(variable2, clower), size = .1) +
             ggplot2::theme_bw() +
             ggplot2::xlim(minx,maxx) + ggplot2::ylim(miny,maxy) +
-            ggplot2::ggtitle(paste(marker.name, 'in', cohort.name)) +
+            ggplot2::ggtitle(paste0(marker.name, ' in\n', cohort.name)) +
             ggplot2::geom_point(data = df[which(rownames.df %in% highlight),],
-            ggplot2::aes(x=variable2, y=variable1), colour = 'orange', shape = 19, size = 1.5)
+            ggplot2::aes(x=variable2, y=variable1),
+            colour = 'orange', shape = 19, size = 1.5)
+            # ggplot2::theme(plot.title = ggtext::element_textbox_simple())
         if (!is.na(xlab)) {gg = gg + ggplot2::xlab(xlab)}
         if (!is.na(ylab)) {gg = gg + ggplot2::ylab(ylab)}
     }
@@ -213,4 +217,103 @@ uniq = function(x, index.return = FALSE) {
     } else {
         return(x[ix])
     }
+}
+
+per.test = function(res = oppti.result, res.can.typ = names(res[[1]]), n = 10,
+                    draw = FALSE, plot.set = list(BRCA = c('PRKACB'), CCRCC =
+                                                      c('PRKAR2B', 'ATR'))){
+    tmp.lis = as.list(rep(NA,length(res[[1]]))) #template for a cohort-size
+    # data object
+    if (is.null(res.can.typ)){
+        names(tmp.lis) = names(res[[1]])
+    } else {
+        names(tmp.lis) = res.can.typ
+    }
+    p.values = tmp.lis
+    data.overexpressions = tmp.lis
+    observed.overexpressions = tmp.lis
+    cancer='UCEC'
+    for (cancer in res.can.typ) {
+        set.seed(1)
+        thr = res[[5]][[cancer]]
+        dys = res[[1]][[cancer]]
+        # num.permutation = round(ncol(dys)/1) #***
+        num.permutation = round(ncol(dys))*n # proportionate to cohort size
+        # (degree of freedom)
+        observed.overexpression =  100*rowMeans(dys > thr, na.rm = T)
+        data.overexpression = setNames(data.frame(matrix(NA, nrow(dys),
+            num.permutation), row.names = rownames(dys)), paste0('data',
+                seq_len(num.permutation)))
+        i=1
+        for (i in seq_len(num.permutation)) {
+            # message('permutation in ',cancer,': ', i)
+            # permute outliers for each sample
+            dys = res[[1]][[cancer]]
+            s=1
+            for (s in seq_len(ncol(dys))) {
+                non.na = !is.na(dys[,s])
+                dys[non.na, s] = dys[sample(which(non.na), sum(non.na),
+                                            replace = F), s]
+            }
+            # i-th permutation distribution
+            data.overexpression[,i] = 100*rowMeans(dys > thr, na.rm = T)
+            per.don = which(ceiling(seq(from = num.permutation/100, to =
+                num.permutation, by = num.permutation/100)) %in% i) #**
+            if (length(per.don) > 0) {message(per.don, '% done.')}
+        }
+        #' # Different markers have different permutation distribution! Combine
+        #'  them to generate a universal permutation distribution that is the
+        #'  null distribution for an arbitrary marker's overexpression
+        data.overexpression = unlist(data.overexpression)
+        # p.value = apply(as.matrix(observed.overexpression), 1, function(x)
+        # {mean(data.overexpression > x, na.rm = T)})
+        data.overexpression = sort(as.numeric(data.overexpression))#exclude NA
+        data.overexpression = data.overexpression[!is.na(data.overexpression)]
+        L = length(data.overexpression)
+        p.value = setNames(array(NA, length(observed.overexpression)),
+                           names(observed.overexpression))
+        for (j in seq_along(observed.overexpression)) {
+            if (j %in% round(seq(from=1,to=length(observed.overexpression),
+                                 len=100))){ #*** try storing this seq
+                message('evaluating marker in ',cancer,': ',
+                        round(100*j/length(observed.overexpression)),'% done.')
+            }
+            if (!is.na(observed.overexpression[j])) {
+                p.value[j] = length(which(data.overexpression >
+                    observed.overexpression[j])) / L # one-tailed test
+            }
+        }
+        p.values[[cancer]] = p.value
+        data.overexpressions[[cancer]] = data.overexpression
+        observed.overexpressions[[cancer]] = observed.overexpression
+    }
+    if (draw) {
+        cancer=res.can.typ[10]
+        for (cancer in res.can.typ) {
+            data.overexpression = data.overexpressions[[cancer]]
+            observed.overexpression = observed.overexpressions[[cancer]]
+            p.value = p.values[[cancer]]
+            marker=plot.set[1]
+            for (marker in plot.set[[cancer]]) {
+                if (!is.na(p.value[marker])){
+                    df = data.frame(weight = data.overexpression)
+                    p = ggplot(df, aes(x = weight))
+                    p = p + geom_histogram(aes(y = ..density..),
+                        colour="black", fill="white", binwidth = 1)
+                    # p = p + geom_density(alpha=.2, fill="#FF6666")
+                    p = p + geom_vline(xintercept =
+                        observed.overexpression[marker], color="blue",
+                        linetype = 'dashed', size=1)
+                    p = p + xlab('Overexpression') + ylab('Density')
+                    # p = p + ggtitle(paste0('Permutation distribution
+                    # (', marker,', p = ',format.pval(p.value[marker]), ')') )
+                    p = p + ggtitle(paste0(marker, ' in ', cancer,', p = ',
+                                           format.pval(p.value[marker])))
+                    pdf(paste0(cancer,'.',marker,'.pdf'), width = 5,
+                        height = 3, useDingbats = FALSE); print(p); dev.off()
+                }
+            }
+        }
+    }
+    return(p.values)
 }

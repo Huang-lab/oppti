@@ -309,7 +309,7 @@ statTest = function(dat, dat.imp, marker.proc.list = NULL, pval.insig = 2E-1) {
 markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
     marker.proc.list = NULL, dataset = '', num.omit.fit = NULL,
     draw.sc = TRUE, draw.vi = TRUE, conf.int = .95, ylab = 'Observed',
-    xlab = 'Inferred'){
+    xlab = 'Inferred', cohort.name = NULL){
     if (is.null(marker.proc.list)) {marker.proc.list = rownames(dat)}
     if (is.null(num.omit.fit)) {num.omit.fit = round(.1*ncol(dat))}
     plot.list.marked = as.list(rep(NA,nrow(dat)))
@@ -323,7 +323,7 @@ markOut = function(dat, dat.imp, dat.imp.test, dat.dys, dys.sig.thr.upp,
         dat.dys[marker,marker.out.exp.loc]
         out = gqplot(y = dat[marker,], x = dat.imp[marker,], ci = conf.int,
             ylab = ylab, xlab = xlab,
-            highlight = marker.out.samples, omit.fit = num.omit.fit)
+            highlight = marker.out.samples, omit.fit = num.omit.fit, cohort.name = cohort.name)
             #, minl = minl, maxl = maxl)
         d=out[[1]]; plot.it=out[[2]]; slope=out[[3]]
         plot.list.marked[[marker.loc]] = plot.it
@@ -559,6 +559,8 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
 #' (by the percentage of outlying samples) across the cohorts.
 #' @param draw.ou.markers character array, marker list to draw pan-cancer
 #' outlier percentage plots
+#' @param permutation.tests logical, to perform the permutation tests for each
+#' marker overexpression
 #' @param verbose logical, to show progress of the algorithm.
 #' @return dysregulation scores of every marker for each sample.
 #' @return the imputed data that putatively represents the expressions of the
@@ -569,6 +571,8 @@ clusterData = function(data, annotation_row = NULL, annotation_col = NULL,
 #' samples for every marker.
 #' @return a data list containing, for each cohort, the outlier significance
 #' threshold.
+#' @return a data list containing, for each cohort, the slope of regression
+#' in dysregulation curve
 #' @examples
 #' set.seed(1)
 #' dat = setNames(as.data.frame(matrix(runif(10*10),10,10),
@@ -579,7 +583,8 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
     panel.markers = NULL, tol.nas = 20, ku = 6, miss.pstat = .4,
     demo.panels = FALSE, save.data = FALSE, draw.sc.plots = FALSE,
     draw.vi.plots = FALSE, draw.sc.markers = NULL,
-    draw.ou.plots = FALSE, draw.ou.markers = NULL, verbose = FALSE) {
+    draw.ou.plots = FALSE, draw.ou.markers = NULL,
+    permutation.tests = TRUE, verbose = FALSE) {
     # fix flags: let draw.*.markers master draw.*.plots
     if (!is.null(draw.sc.markers)) {draw.sc.plots = TRUE}
     if (!is.null(draw.ou.markers)) {draw.ou.plots = TRUE}
@@ -669,7 +674,7 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
         unlist(pan.dat.dys[[i]][pan.markers.imp.insig[[i]],])}
     pan.dys.sig.thr.upp = lapply(pan.dat.imp.insig.all.dys, function(x)
         {x=quantile(x, .95, na.rm = TRUE)})
-
+    # Draw demographics
     if (demo.panels) {
         if (verbose){
             message('Generating demo for the panel markers...')}
@@ -792,6 +797,10 @@ oppti = function(data, mad.norm = FALSE, cohort.names = NULL, panel = 'global',
             pan.dat.dys.slope[[1]])
         for (i in seq_along(res)) {res[[i]] = list(res[[i]])}
         for (i in seq_along(res)) {names(res[[i]]) = cohort.names}
+    }
+    # Permutation tests
+    if (permutation.tests){
+        res = c(res, list(per.test(res)))
     }
     return(res)
 }
