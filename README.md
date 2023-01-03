@@ -11,6 +11,11 @@ BiocManager::install("oppti")
 For older versions of R, please refer to the appropriate Bioconductor
 release.
 
+# Citation
+
+Elmas, A., Tharakan, S., Jaladanki, S. et al. Pan-cancer proteogenomic investigations identify post-transcriptional kinase targets. Commun Biol 4, 1112 (2021).
+[![DOI](https://zenodo.org/badge/DOI/10.1038/s42003-021-02636-7.svg)](https://doi.org/10.1038/s42003-021-02636-7)
+
 # Documentation
 
 To view documentation for the version of this package installed in your
