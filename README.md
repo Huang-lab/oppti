@@ -1,18 +1,18 @@
 # Installation
 
-To install this package, start R (version “4.1”) and enter:
+To install the latest version of this package, start R (version “4.1”) and enter:
+
+``` r
+library(devtools)
+install_github("Huang-lab/oppti")
+```
+
+Optionally, it can be installed from BioConductor:
 
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("oppti")
-```
-
-For the latest version, enter:
-
-``` r
-library(devtools)
-install_github("Huang-lab/oppti")
 ```
 
 For older versions of R, please refer to the appropriate Bioconductor
