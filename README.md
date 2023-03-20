@@ -8,6 +8,13 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("oppti")
 ```
 
+For the latest version, enter:
+
+``` r
+library(devtools)
+install_github("Huang-lab/oppti")
+```
+
 For older versions of R, please refer to the appropriate Bioconductor
 release.
 
